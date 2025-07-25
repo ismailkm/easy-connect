@@ -1,75 +1,85 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// In App.tsx
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  Button,
+  NativeModules,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// This line imports your native module into React Native
+const { GemmaModule } = NativeModules;
 
-export default function HomeScreen() {
+const HomeScreen = () => {
+  const [status, setStatus] = useState('Model not loaded.');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // This function is called when you press the button
+  const handleLoadModel = async () => {
+    // Check if the native module exists
+    if (!GemmaModule) {
+      setStatus('Error: GemmaModule is not available. Check your native setup.');
+      return;
+    }
+
+    setIsLoading(true);
+    setStatus('Loading model, please wait...');
+
+    try {
+      // This is the key part: it calls your Kotlin function
+      const result = await GemmaModule.loadModel();
+      console.log(result)
+      setStatus(result); // If successful, display the success message from Kotlin
+    } catch (error) {
+      console.error(error);
+      // If it fails, display the error message from Kotlin
+      setStatus(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>The Bridging App</Text>
+      <Text style={styles.subtitle}>Day 1: Foundation Test</Text>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Load Gemma 3n Model"
+          onPress={handleLoadModel}
+          disabled={isLoading}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+
+      <View style={styles.statusContainer}>
+        <Text style={styles.statusText}>Status:</Text>
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <Text style={styles.status}>{status}</Text>
+        )}
+      </View>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  title: { fontSize: 24, fontWeight: 'bold' },
+  subtitle: { fontSize: 18, color: 'gray', marginBottom: 40 },
+  buttonContainer: { marginVertical: 20 },
+  statusContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    marginTop: 20,
+    paddingHorizontal: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  statusText: { fontSize: 16, fontWeight: 'bold', marginRight: 10 },
+  status: { fontSize: 16, color: 'navy', flexShrink: 1 },
 });
+
+export default HomeScreen;
