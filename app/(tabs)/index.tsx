@@ -1,13 +1,13 @@
 // In App.tsx
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Button,
-  NativeModules,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View
+    ActivityIndicator,
+    Button,
+    NativeModules,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 
 // This line imports your native module into React Native

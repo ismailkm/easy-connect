@@ -14,7 +14,7 @@ import com.google.mediapipe.tasks.genai.llminference.LlmInference.LlmInferenceOp
 class GemmaModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     override fun getName() = "GemmaModule"
-    private val modelName = "Gemma3-1B-IT_multi-prefill-seq_q4_ekv2048.task"
+    private val modelName = "gemma3-1B-it-int4.task"
     private var llmInference: LlmInference? = null
 
     @ReactMethod
