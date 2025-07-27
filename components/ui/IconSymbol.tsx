@@ -25,6 +25,7 @@ const MAPPING = {
   'book.closed.fill': 'book',
   'graduationcap.fill': 'school',
   'questionmark.circle.fill': 'help-outline',
+  'arrow.up.circle.fill': 'send',
 } as IconMapping;
 
 /**

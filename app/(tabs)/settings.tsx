@@ -1,9 +1,9 @@
+import { Text, View } from '@/components/Themed';
 import UserForm from '@/components/UserForm';
 import { LANGUAGES } from '@/constants/Languages';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, View } from '@/components/Themed';
 import { StorageHelper } from '../../models/StorageHelper';
 import { UserModel } from '../../models/UserModel';
 
@@ -75,11 +75,11 @@ const styles = StyleSheet.create({
   resetButton: {
     width: '100%',
     height: 60,
-    backgroundColor: '#FF6347',
+    backgroundColor: 'red',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 20
   },
   resetButtonText: {
     color: '#FFFFFF',
