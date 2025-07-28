@@ -5,9 +5,9 @@ const USER_DATA_KEY = 'userData';
 
 export const UserModel = {
 
-  async saveUserDetails(firstName: string, nativeLanguage: Language): Promise<void> {
-    const userData: UserInterface = { firstName, nativeLanguage };
+  async saveUserDetails(userData: UserInterface): Promise<void> {
     await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+
   },
 
   async getUserDetails(): Promise<UserInterface | null> {

@@ -5,16 +5,12 @@ import { Platform, TouchableOpacity } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: true,
         headerTitle: 'Easy Connect',
         headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
@@ -47,9 +43,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="practice-english"
+        name="learn-english"
         options={{
-          title: 'Practice English',
+          title: 'Learn English',
           tabBarIcon: ({ color }) => <IconSymbol size={20} name="graduationcap.fill" color={color} />,
         }}
       />

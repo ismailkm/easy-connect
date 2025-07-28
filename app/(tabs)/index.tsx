@@ -1,10 +1,10 @@
+import { DashboardButton } from '@/components/DashboardButton';
 import { Text, View } from '@/components/Themed';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { UserModel } from '@/models/UserModel';
 import UserInterface from '@/types/UserInterface';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const DashboardScreen = () => {
   const [userData, setUserData] = useState<UserInterface | null>(null);
@@ -46,35 +46,24 @@ const DashboardScreen = () => {
 
       {/* Section 2: Buttons */}
       <View style={styles.buttonSection}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/translate')}>
-            <View style={styles.buttonRight}>
-              <IconSymbol name="text.bubble.fill" size={40} color="white" />
-            </View>
-            <View style={styles.buttonLeft}>
-              <Text style={styles.buttonTitle}>Translate</Text>
-              <Text style={styles.buttonSubtitle}>From Camera or Text</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/practice-english')}>
-            <View style={styles.buttonRight}>
-              <IconSymbol name="graduationcap.fill" size={40} color="white" />
-            </View>
-            <View style={styles.buttonLeft}>
-              <Text style={styles.buttonTitle}>Practice English</Text>
-              <Text style={styles.buttonSubtitle}>Chat with an AI Tutor</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/ask-about-uk-life')}>
-            <View style={styles.buttonRight}>
-              <IconSymbol name="questionmark.circle.fill" size={40} color="white" />
-            </View>
-            <View style={styles.buttonLeft}>
-              <Text style={styles.buttonTitle}>Ask About UK Life</Text>
-              <Text style={styles.buttonSubtitle}>Get Help & Information</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+          <DashboardButton
+            iconName="text.bubble.fill"
+            title="Translate"
+            subtitle="From Camera or Text"
+            onPress={() => router.push('/(tabs)/translate')}
+          />
+          <DashboardButton
+            iconName="graduationcap.fill"
+            title="Learn English"
+            subtitle="Interactive Lessons"
+            onPress={() => router.push('/(tabs)/learn-english')}
+          />
+          <DashboardButton
+            iconName="questionmark.circle.fill"
+            title="Ask About UK Life"
+            subtitle="Get Help & Information"
+            onPress={() => router.push('/(tabs)/ask-about-uk-life')}
+          />
       </View>
     </View>
   );
@@ -161,38 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
     textAlign: 'center',
-  },
-  buttonContainer: {
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    width: '90%',
-    alignItems: 'center',
-    flexDirection: 'row'
-  },
-  buttonRight: {
-    flex:1, 
-    backgroundColor: 'transparent'
-  },
-  buttonLeft: {
-    flex:3, 
-    backgroundColor: 'transparent'
-  },
-  buttonTitle: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  buttonSubtitle: {
-    color: 'white',
-    fontSize: 12,
-    opacity: 0.8,
-  },
+  }
 });
 
 export default DashboardScreen;

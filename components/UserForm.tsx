@@ -1,54 +1,76 @@
 import { Text, View } from '@/components/Themed';
+import FormButton from '@/components/ui/FormButton';
+import SelectionButton from '@/components/ui/SelectionButton';
+import { ENGLISH_LEVELS } from '@/constants/EnglishLevels';
+import { GENDERS } from '@/constants/Genders';
 import { LANGUAGES } from '@/constants/Languages';
-import { MaterialIcons } from '@expo/vector-icons';
+import UserInterface from '@/types/UserInterface';
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, TextInput } from 'react-native';
 
 interface UserFormProps {
-  initialFirstName?: string;
-  initialNativeLanguage?: Language;
-  onSave: (firstName: string, nativeLanguage: Language) => void;
+  initialUserData?: UserInterface;
+  onSave: (userData: UserInterface) => void;
   buttonTitle: string;
-  isNewUser?: boolean;
 }
 
 const UserForm: React.FC<UserFormProps> = ({
-  initialFirstName = '',
-  initialNativeLanguage = LANGUAGES[0].value as Language,
+  initialUserData,
   onSave,
   buttonTitle,
-  isNewUser = false,
 }) => {
-  const [firstName, setFirstName] = useState(initialFirstName);
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>(initialNativeLanguage);
+  const [firstName, setFirstName] = useState(initialUserData?.firstName || '');
+  const [nativeLanguage, setNativeLanguage] = useState<Language>(LANGUAGES[0].value as Language);
+  const [englishLevel, setEnglishLevel] = useState<EnglishLevel>(ENGLISH_LEVELS[0].value as EnglishLevel);
+  const [age, setAge] = useState<string>(initialUserData?.age?.toString() || '');
+  const [profession, setProfession] = useState<string>(initialUserData?.profession || '');
+  const [gender, setGender] = useState<GenderType>(GENDERS[0].value);
 
   useEffect(() => {
-    setFirstName(initialFirstName);
-    setSelectedLanguage(initialNativeLanguage);
-  }, [initialFirstName, initialNativeLanguage]);
+    if (initialUserData) {
+      setFirstName(initialUserData.firstName || '');
+      setNativeLanguage(initialUserData.nativeLanguage || LANGUAGES[0]);
+      setEnglishLevel(initialUserData.englishLevel || ENGLISH_LEVELS[0]);
+      setAge(initialUserData.age?.toString() || '');
+      setProfession(initialUserData.profession || '');
+      setGender(initialUserData.gender || GENDERS[0].value);
+    }
+  }, [initialUserData]);
 
   const handleSave = () => {
     if (!firstName.trim()) {
       Alert.alert('Validation Error', 'Please enter your first name.');
       return;
     }
-    if (!selectedLanguage) {
+    if (!nativeLanguage) {
       Alert.alert('Validation Error', 'Please select a native language.');
       return;
     }
-    onSave(firstName, selectedLanguage);
+    if (!age.trim()) {
+      Alert.alert('Validation Error', 'Please enter your age.');
+      return;
+    }
+    if (!profession.trim()) {
+      Alert.alert('Validation Error', 'Please enter your profession.');
+      return;
+    }
+    if (!gender) {
+      Alert.alert('Validation Error', 'Please select your gender.');
+      return;
+    }
+    onSave({
+      firstName,
+      nativeLanguage,
+      englishLevel,
+      age: age ? parseInt(age, 10) : undefined,
+      profession: profession || undefined,
+      gender: gender || undefined,
+    });
   };
 
   return (
     <View style={styles.container}>
-      {isNewUser && (
-        <View style={styles.logoContainer}>
-          <MaterialIcons name="group-add" size={80} color="#007AFF" />
-        </View>
-      )}
       
-      {isNewUser && <Text style={styles.welcomeText}>Welcome to Easy Connect</Text>}
-
       <TextInput
         style={styles.input}
         placeholder="First Name"
@@ -56,31 +78,58 @@ const UserForm: React.FC<UserFormProps> = ({
         onChangeText={setFirstName}
       />
 
-      <View style={styles.languageButtonsContainer}>
-        {LANGUAGES.map((lang) => (
-          <TouchableOpacity
-            key={lang.value}
-            style={[
-              styles.languageButton,
-              selectedLanguage === lang.value && styles.selectedLanguageButton,
-            ]}
-            onPress={() => setSelectedLanguage(lang.value as Language)}
-          >
-            <Text
-              style={[
-                styles.languageButtonText,
-                selectedLanguage === lang.value && styles.selectedLanguageButtonText,
-              ]}
-            >
-              {lang.label}
-            </Text>
-          </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        placeholder="Age"
+        value={age}
+        onChangeText={setAge}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.label}>Gender</Text>
+      <View style={styles.buttonsContainer}>
+        {GENDERS.map((gen) => (
+          <SelectionButton
+            key={gen.value}
+            title={gen.label}
+            onPress={() => setGender(gen.value)}
+            isSelected={gender === gen.value}
+          />
         ))}
       </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>{buttonTitle}</Text>
-      </TouchableOpacity>
+      <Text style={styles.label}>Native Language</Text>
+      <View style={styles.buttonsContainer}>
+        {LANGUAGES.map((lang) => (
+          <SelectionButton
+            key={lang.value}
+            title={lang.label}
+            onPress={() => setNativeLanguage(lang.value as Language)}
+            isSelected={nativeLanguage === lang.value}
+          />
+        ))}
+      </View>
+
+      <Text style={styles.label}>English Level</Text>
+      <View style={styles.buttonsContainer}>
+          {ENGLISH_LEVELS.map((level) => (
+            <SelectionButton
+              key={level.value}
+              title={level.label}
+              onPress={() => setEnglishLevel(level.value as EnglishLevel)}
+              isSelected={englishLevel === level.value}
+            />
+          ))}
+      </View>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Profession"
+        value={profession}
+        onChangeText={setProfession}
+      />
+
+      <FormButton title={buttonTitle} onPress={handleSave} />
     </View>
   );
 };
@@ -91,17 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
     width: '100%',
-  },
-  logoContainer: {
-    marginBottom: 30,
-  },
-  welcomeText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    color: '#333',
   },
   input: {
     width: '100%',
@@ -114,48 +153,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     fontSize: 18,
   },
-  languageButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 40,
-  },
-  languageButton: {
-    flex: 1,
-    marginHorizontal: 5,
-    height: 60,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  selectedLanguageButton: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  languageButtonText: {
-    fontSize: 18,
-    color: '#333',
-    fontWeight: '600',
-  },
-  selectedLanguageButtonText: {
-    color: '#FFFFFF',
-  },
-  saveButton: {
-    width: '100%',
-    height: 60,
-    backgroundColor: '#6495ED',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
+  label: {
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#333',
+    alignSelf: 'flex-start',
+    marginBottom: 10,
+    marginTop: 10,
   },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 30,
+    backgroundColor: 'transparent'
+  },
+
 });
 
 export default UserForm;
