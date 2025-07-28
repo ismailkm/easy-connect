@@ -1,6 +1,6 @@
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View } from './Themed';
 import { IconSymbol, IconSymbolName } from './ui/IconSymbol';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 
 interface DashboardButtonProps {
   iconName: IconSymbolName;

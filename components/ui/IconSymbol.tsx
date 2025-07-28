@@ -26,6 +26,7 @@ const MAPPING = {
   'graduationcap.fill': 'school',
   'questionmark.circle.fill': 'help-outline',
   'arrow.up.circle.fill': 'send',
+  'play': 'play-arrow',
 } as IconMapping;
 
 /**
