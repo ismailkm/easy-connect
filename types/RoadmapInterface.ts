@@ -30,7 +30,7 @@ declare type ContentItem = ContentGoal | ContentVocabulary | ContentQuiz;
 
 declare type status = 'not_started' | 'in_progress' | 'completed';
 
-interface Stage {
+export interface Stage {
   id: string;
   title: string;
   duration: string;

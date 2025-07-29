@@ -47,6 +47,7 @@ export default function RootLayout() {
         <Stack.Screen name="welcome" options={{ headerShown: false }} />
       )}
       <Stack.Screen name="+not-found" />
+      <Stack.Screen name="roadmap" options={{ headerShown: false }} />
     </Stack>
   );
 }

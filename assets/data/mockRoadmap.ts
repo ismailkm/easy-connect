@@ -13,7 +13,7 @@ export const MOCK_ROADMAPS: RoadmapInterface[] =
         "title": "Week 1: Greetings & Introductions",
         "duration": "1 Week",
         "progress": 0.0,
-        "status": "not_started",
+        "status": "completed",
         "content": [
             {
             "type": "goal",
@@ -59,7 +59,7 @@ export const MOCK_ROADMAPS: RoadmapInterface[] =
         "title": "Week 2: At the Supermarket",
         "duration": "1 Week",
         "progress": 0.0,
-        "status": "not_started",
+        "status": "in_progress",
         "content": [
             {
             "type": "goal",

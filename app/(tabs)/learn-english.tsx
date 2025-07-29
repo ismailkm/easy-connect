@@ -49,7 +49,7 @@ export default function LearnEnglishScreen() {
           data={roadmaps}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.roadmapItem} >
+            <TouchableOpacity style={styles.roadmapItem} onPress={() => router.push({ pathname: "/roadmap/[id]", params: { id: item.id } })}>
                 <View>
                   <Text style={styles.roadmapTitle}>{item.title}</Text>
                   <Text style={styles.roadmapProgress}>Progress: {item.progress * 100}%</Text>
