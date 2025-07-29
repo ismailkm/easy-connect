@@ -1,53 +1,71 @@
+import { GemmaProvider, useGemma } from '@/context/GemmaProvider';
+import { StorageHelper } from '@/models/StorageHelper';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 import 'react-native-reanimated';
-import { StorageHelper } from '../models/StorageHelper';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+  return (
+    <GemmaProvider>
+      <AppLayout />
+    </GemmaProvider>
+  );
+}
+
+function AppLayout() {
+  const router = useRouter();
+  const { isModelLoaded, isLoading: isGemmaLoading, error: modelError } = useGemma();
+  const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasOnboarded, setHasOnboarded] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       try {
-        const onboarded = await StorageHelper.getOnboardedStatus();
-        setHasOnboarded(onboarded);
+        const hasOnboarded = await StorageHelper.getOnboardedStatus();
+        if (hasOnboarded) {
+          router.replace('/(tabs)');
+        } else {
+          router.replace('/welcome');
+        }
       } catch (e) {
-        setHasOnboarded(false);
-      } finally {
-        setIsLoading(false);
+        router.replace('/welcome');
       }
     };
+    if (fontsLoaded && isModelLoaded) {
+      checkOnboardingStatus();
+    }
+  }, [fontsLoaded, isModelLoaded]); 
 
-    checkOnboardingStatus();
-  }, []);
+  const isAppLoading = !fontsLoaded || isGemmaLoading;
 
-  if (!loaded || isLoading || hasOnboarded === null) {
+  if (isAppLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 10 }}>Preparing Easy Connect...</Text>
+      </View>
+    );
+  }
+  
+  if (modelError || fontError) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Error starting app: {modelError || fontError?.message}</Text>
       </View>
     );
   }
 
   return (
-    <Stack>
-      {hasOnboarded ? (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      ) : (
-        <Stack.Screen name="welcome" options={{ headerShown: false }} />
-      )}
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="welcome" />
+      <Stack.Screen name="roadmap" />
+      <Stack.Screen name="lesson" />
+      <Stack.Screen name="quiz" />
       <Stack.Screen name="+not-found" />
-      <Stack.Screen name="roadmap" options={{ headerShown: false }} />
     </Stack>
   );
 }
