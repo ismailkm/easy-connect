@@ -1,48 +1,38 @@
-interface ContentGoal {
-  type: 'goal';
-  text: string;
-}
-
-interface VocabularyItem {
+interface MaterialItem {
   en: string;
   native: string;
 }
 
-interface ContentVocabulary {
-  type: 'vocabulary';
+export interface LearningMaterial {
+  type: 'vocabulary' | 'grammar_tip' | 'phrase_list'; 
   title: string;
-  items: VocabularyItem[];
+  items: MaterialItem[];
 }
 
-interface QuizQuestion {
-  question: string;
-  options: string[];
-  correctAnswer: string;
-}
-
-interface ContentQuiz {
-  type: 'quiz';
+interface Quiz {
   title: string;
-  questions: QuizQuestion[];
+  questions: {
+    question: string;
+    options: string[];
+    correctAnswer: string;
+  }[];
 }
 
-declare type ContentItem = ContentGoal | ContentVocabulary | ContentQuiz;
-
-declare type status = 'not_started' | 'in_progress' | 'completed';
-
-export interface Stage {
+export interface StageInterface {
   id: string;
   title: string;
   duration: string;
   progress: number;
-  status: status;
-  content: ContentItem[]; 
+  status: 'not_started' | 'in_progress' | 'completed';
+  goal: string; 
+  learningMaterials: LearningMaterial[]; 
+  quiz: Quiz; 
 }
 
 export interface RoadmapInterface {
   id: string;
-  title: string;
+  title:string;
   duration: string;
   progress: number;
-  stages: Stage[]; 
+  stages: StageInterface[];
 }

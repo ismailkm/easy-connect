@@ -1,14 +1,15 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { MOCK_ROADMAPS } from '@/assets/data/mockRoadmap';
-import { RoadmapInterface, Stage } from '@/types/RoadmapInterface';
+import { RoadmapInterface, StageInterface } from '@/types/RoadmapInterface';
 
 export default function RoadmapDetailScreen() {
   const { id } = useLocalSearchParams();
   const [roadmap, setRoadmap] = useState<RoadmapInterface | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
@@ -16,14 +17,6 @@ export default function RoadmapDetailScreen() {
       setRoadmap(foundRoadmap || null);
     }
   }, [id]);
-
-  // if (!roadmap) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <Text style={styles.title}>Roadmap Not Found</Text>
-  //     </View>
-  //   );
-  // }
 
   const getStatusIcon = (status: 'not_started' | 'in_progress' | 'completed') => {
     switch (status) {
@@ -38,16 +31,21 @@ export default function RoadmapDetailScreen() {
     }
   };
 
-  const renderStageItem = ({ item }: { item: Stage }) => (
-    <View style={styles.stageItem}>
-      <View style={styles.stageHeader}>
-        <Text style={styles.stageTitle}>{item.title}</Text>
-        <Text style={styles.statusIcon}>
-          {getStatusIcon(item.status)}
-        </Text>
-      </View>
-    </View>
-  );
+  const renderStageItem = ({ item }: { item: StageInterface }) => {
+    return (
+        <Pressable 
+          style={styles.stageItem}
+          onPress={() => router.push(`/lesson/${item.id}`)}
+        >
+          <View style={styles.stageHeader}>
+          <Text style={styles.stageTitle}>{item.title}</Text>
+            <Text style={styles.statusIcon}>
+              {getStatusIcon(item.status)}
+            </Text>
+          </View>
+      </Pressable>
+    );
+  }
 
   return (
     !roadmap ?
