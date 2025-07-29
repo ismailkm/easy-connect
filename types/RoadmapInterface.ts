@@ -9,13 +9,15 @@ export interface LearningMaterial {
   items: MaterialItem[];
 }
 
-interface Quiz {
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+}
+
+export interface Quiz {
   title: string;
-  questions: {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-  }[];
+  questions: QuizQuestion[];
 }
 
 export interface StageInterface {

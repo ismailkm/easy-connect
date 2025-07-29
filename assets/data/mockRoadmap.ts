@@ -32,16 +32,36 @@ export const MOCK_ROADMAPS: RoadmapInterface[] =  [
             ]
             }
         ],
-        "quiz": {
-            "title": "Test Your Knowledge",
-            "questions": [
-            {
-                "question": "How do you say hello when meeting someone?",
-                "options": ["Goodbye", "Thank you", "Hello", "My name is..."],
-                "correctAnswer": "Hello"
-            }
-            ]
-        }
+              "quiz": {
+        "title": "Test Your Knowledge",
+        "questions": [
+          {
+            "question": "How do you say 'Hello' in Pashto?",
+            "options": ["د خدای په امان", "مننه", "سلام", "زما نوم دی..."],
+            "correctAnswer": "سلام"
+          },
+          {
+            "question": "What is the English meaning of 'څنګه یاست؟'?",
+            "options": ["My name is...", "Nice to meet you", "Goodbye", "How are you?"],
+            "correctAnswer": "How are you?"
+          },
+          {
+            "question": "Which phrase do you use to introduce yourself?",
+            "options": ["I'm fine, thank you", "My name is...", "Nice to meet you", "Hello"],
+            "correctAnswer": "My name is..."
+          },
+          {
+            "question": "What is the English meaning of 'د خدای په امان'?",
+            "options": ["Hello", "Goodbye", "Good morning", "How are you?"],
+            "correctAnswer": "Goodbye"
+          },
+          {
+            "question": "You meet someone for the first time. What do you say?",
+            "options": ["I'm fine, thank you", "My name is...", "Nice to meet you", "Goodbye"],
+            "correctAnswer": "Nice to meet you"
+          }
+        ]
+      }
         },
         {
         "id": "stage_b1",

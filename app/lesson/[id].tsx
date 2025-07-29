@@ -1,14 +1,16 @@
 import { MOCK_ROADMAPS } from '@/assets/data/mockRoadmap';
 import { VocabularyComponent } from '@/components/lesson/VocabularyComponent';
+import FormButton from '@/components/ui/FormButton';
 import { StageInterface } from '@/types/RoadmapInterface';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams();
   const [stageContent, setStageContent] = useState<StageInterface | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
@@ -54,7 +56,7 @@ export default function LessonScreen() {
                         }
                     })}
                     <View >
-                        <Button title="Start Quiz" onPress={() => { /* Navigate to quiz screen */ }} />
+                      <FormButton title="Start Quiz" onPress={() => router.push(`/quiz/${id}`)} />
                     </View>
                 </ScrollView>
                 
