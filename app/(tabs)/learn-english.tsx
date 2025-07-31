@@ -14,7 +14,6 @@ export default function LearnEnglishScreen() {
   useEffect(() => {
     const loadRoadmaps = async () => {
       let storageRoadmap = await RoadmapModel.getRoadmaps();
-      console.log({storageRoadmap})
       setRoadmaps(storageRoadmap); 
       setIsLoading(false);
     };

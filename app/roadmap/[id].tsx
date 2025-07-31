@@ -1,10 +1,9 @@
+import { RoadmapModel } from '@/models/RoadmapModel';
+import { RoadmapInterface, StageInterface } from '@/types/RoadmapInterface';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-
-import { MOCK_ROADMAPS } from '@/assets/data/mockRoadmap';
-import { RoadmapInterface, StageInterface } from '@/types/RoadmapInterface';
 
 export default function RoadmapDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -12,10 +11,11 @@ export default function RoadmapDetailScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    if (id) {
-      const foundRoadmap = MOCK_ROADMAPS.find((r: RoadmapInterface) => r.id === id);
+    const loadRoadmaps = async () => {
+      let foundRoadmap = await RoadmapModel.getRoadmapById(id as string);
       setRoadmap(foundRoadmap || null);
-    }
+    };
+    loadRoadmaps();
   }, [id]);
 
   const getStatusIcon = (status: 'not_started' | 'in_progress' | 'completed') => {
@@ -56,6 +56,7 @@ export default function RoadmapDetailScreen() {
     <View style={styles.container}>
       <View style={styles.roadmapHeader}>
         <Text style={styles.roadmapTitle}>{roadmap.title}</Text>
+        <Text style={styles.roadmapGoal}>{roadmap.goal}</Text>
         <Text style={styles.roadmapInfo}>Duration: {roadmap.duration}</Text>
         <Text style={styles.roadmapInfo}>Overall Progress: {Math.round(roadmap.progress * 100)}%</Text>
       </View>
@@ -128,4 +129,8 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 3,
   },
+  roadmapGoal: {
+    fontSize: 14,
+    marginBottom: 20
+  }
 });
