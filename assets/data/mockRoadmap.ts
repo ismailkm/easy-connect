@@ -32,7 +32,7 @@ export const MOCK_ROADMAPS: RoadmapInterface[] =  [
             ]
             }
         ],
-              "quiz": {
+        "quiz": {
         "title": "Test Your Knowledge",
         "questions": [
           {

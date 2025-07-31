@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     borderColor: '#007AFF',
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
     textAlign: 'center'
   },

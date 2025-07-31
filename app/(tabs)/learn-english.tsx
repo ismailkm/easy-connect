@@ -1,12 +1,10 @@
 import { DashboardButton } from '@/components/DashboardButton';
 import { Text, View } from '@/components/Themed';
+import { RoadmapModel } from '@/models/RoadmapModel';
+import { RoadmapInterface } from '@/types/RoadmapInterface';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-
-import { MOCK_ROADMAPS } from '@/assets/data/mockRoadmap';
-import { RoadmapInterface } from '@/types/RoadmapInterface';
-
 
 export default function LearnEnglishScreen() {
   const router = useRouter();
@@ -15,7 +13,9 @@ export default function LearnEnglishScreen() {
 
   useEffect(() => {
     const loadRoadmaps = async () => {
-      setRoadmaps(MOCK_ROADMAPS); 
+      let storageRoadmap = await RoadmapModel.getRoadmaps();
+      console.log({storageRoadmap})
+      setRoadmaps(storageRoadmap); 
       setIsLoading(false);
     };
 
@@ -33,7 +33,7 @@ export default function LearnEnglishScreen() {
         title="Start Your First Lesson"
         subtitle="Create your first plan now!"
         iconName="play"
-        onPress={() => alert("generate road map")}
+        onPress={() => router.push('/create-roadmap')}
       />
     </View>
   );
@@ -52,6 +52,7 @@ export default function LearnEnglishScreen() {
             <TouchableOpacity style={styles.roadmapItem} onPress={() => router.push({ pathname: "/roadmap/[id]", params: { id: item.id } })}>
                 <View>
                   <Text style={styles.roadmapTitle}>{item.title}</Text>
+                  <Text style={styles.roadmapGoal}>{item.goal}</Text>
                   <Text style={styles.roadmapProgress}>Progress: {item.progress * 100}%</Text>
                 </View>
               </TouchableOpacity>
@@ -64,7 +65,7 @@ export default function LearnEnglishScreen() {
           title="Create a New Roadmap"
           subtitle="Start a new learning journey"
           iconName="plus"
-          onPress={() => alert("generate road map")}
+          onPress={() => router.push('/create-roadmap')}
         />
       </View>
       
@@ -104,6 +105,10 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     color: '#666',
     paddingHorizontal: 20,
+  },
+  roadmapGoal: {
+    fontSize: 12,
+    color: '#666',
   },
   roadmapItem: {
     backgroundColor: '#f9f9f9',

@@ -65,6 +65,7 @@ function AppLayout() {
       <Stack.Screen name="roadmap" />
       <Stack.Screen name="lesson" />
       <Stack.Screen name="quiz" />
+      <Stack.Screen name="create-roadmap" options={{ headerShown: true, title: 'Create New Roadmap' }}/>
       <Stack.Screen name="+not-found" />
     </Stack>
   );

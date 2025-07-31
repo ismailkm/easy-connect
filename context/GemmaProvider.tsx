@@ -8,8 +8,7 @@ interface GemmaContextType {
   isModelLoaded: boolean;
   isLoading: boolean;
   error: string | null;
-  generateRoadmap: (goal: string) => Promise<string>; // Function to generate a roadmap
-  // We can add the chat response function here later
+  generateResponse: (prompt: string) => Promise<string>;
 }
 
 // 2. Create the context with a default value
@@ -75,12 +74,17 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
 
   // --- Functions to be exposed to the rest of the app ---
 
-  const generateRoadmap = async (goal: string): Promise<string> => {
-    if (!isModelLoaded || !GemmaModule?.generateRoadmap) { // We'll add generateRoadmap to the native module later
-      throw new Error('Model is not loaded or generateRoadmap function is not available.');
+  const generateResponse = async (prompt: string): Promise<string> => {
+    // This is our central safety check
+    if (!isModelLoaded) {
+      throw new Error('AI Model is not loaded yet. Please wait a moment and try again.');
     }
-    console.log(`GemmaProvider: Generating roadmap for goal: "${goal}"`);
-    return await GemmaModule.generateRoadmap(goal);
+    if (!GemmaModule?.generateResponse) {
+      throw new Error('The native generateResponse function is not available.');
+    }
+    
+    console.log(`GemmaProvider: Sending prompt to native module...`);
+    return await GemmaModule.generateResponse(prompt);
   };
 
   // The value that will be provided to all children components
@@ -88,7 +92,7 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     isModelLoaded,
     isLoading,
     error,
-    generateRoadmap,
+    generateResponse,
   };
 
   return <GemmaContext.Provider value={value}>{children}</GemmaContext.Provider>;

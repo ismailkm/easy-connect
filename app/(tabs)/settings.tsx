@@ -1,12 +1,12 @@
 import { Text, View } from '@/components/Themed';
 import FormButton from '@/components/ui/FormButton';
 import UserForm from '@/components/UserForm';
+import { StorageHelper } from '@/models/StorageHelper';
+import { UserModel } from '@/models/UserModel';
 import UserInterface from '@/types/UserInterface';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
-import { StorageHelper } from '../../models/StorageHelper';
-import { UserModel } from '../../models/UserModel';
 
 
 const SettingsScreen = () => {

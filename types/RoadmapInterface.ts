@@ -27,14 +27,15 @@ export interface StageInterface {
   progress: number;
   status: 'not_started' | 'in_progress' | 'completed';
   goal: string; 
-  learningMaterials: LearningMaterial[]; 
-  quiz: Quiz; 
+  learningMaterials: LearningMaterial[] | []; 
+  quiz: Quiz | null; 
 }
 
 export interface RoadmapInterface {
   id: string;
   title:string;
   duration: string;
+  goal: string;
   progress: number;
-  stages: StageInterface[];
+  stages: StageInterface[] | [];
 }
