@@ -1,4 +1,4 @@
 export const LANGUAGES = [
-  { label: 'Pashto', value: 'Pashto' },
-  { label: 'Dari', value: 'Dari' },
+  { label: 'Pashto', value: 'pashto' },
+  { label: 'Dari', value: 'dari' },
 ];

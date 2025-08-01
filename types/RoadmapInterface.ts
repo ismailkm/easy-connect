@@ -1,13 +1,13 @@
-interface MaterialItem {
+export interface LearningLine {
   en: string;
   native: string;
 }
 
-export interface LearningMaterial {
-  type: 'vocabulary' | 'grammar_tip' | 'phrase_list'; 
-  title: string;
-  items: MaterialItem[];
-}
+// export interface LearningMaterial {
+//   type: 'vocabulary' | 'grammar_tip' | 'phrase_list'; 
+//   title: string;
+//   items: MaterialItem[];
+// }
 
 export interface QuizQuestion {
   question: string;
@@ -27,7 +27,7 @@ export interface StageInterface {
   progress: number;
   status: 'not_started' | 'in_progress' | 'completed';
   goal: string; 
-  learningMaterials: LearningMaterial[] | []; 
+  learningMaterials: LearningLine[] | []; 
   quiz: Quiz | null; 
 }
 

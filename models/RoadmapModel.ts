@@ -1,7 +1,7 @@
-import { RoadmapInterface } from '@/types/RoadmapInterface';
+import { LearningLine, RoadmapInterface, StageInterface } from '@/types/RoadmapInterface';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ROADMAPS_KEY = 'roadmaps';
+const ROADMAPS_STORAGE_KEY = 'roadmaps';
 
 export const RoadmapModel =  {
   
@@ -11,7 +11,7 @@ export const RoadmapModel =  {
    */
   async getRoadmaps(): Promise<RoadmapInterface[]> { // Corrected return type
     try {
-      const roadmapsJson = await AsyncStorage.getItem(ROADMAPS_KEY);
+      const roadmapsJson = await AsyncStorage.getItem(ROADMAPS_STORAGE_KEY);
       if (roadmapsJson) {
         const roadmaps = JSON.parse(roadmapsJson);
         return Array.isArray(roadmaps) ? roadmaps : [];
@@ -31,7 +31,7 @@ export const RoadmapModel =  {
     try {
       const currentRoadmaps = await this.getRoadmaps();
       const updatedRoadmaps = [...currentRoadmaps, newRoadmap]; 
-      await AsyncStorage.setItem(ROADMAPS_KEY, JSON.stringify(updatedRoadmaps));
+      await AsyncStorage.setItem(ROADMAPS_STORAGE_KEY, JSON.stringify(updatedRoadmaps));
     } catch (error) {
       console.error('Error adding roadmap:', error);
     }
@@ -62,7 +62,7 @@ export const RoadmapModel =  {
       const updatedList = currentRoadmaps?.map(roadmap =>
         roadmap.id === updatedRoadmap.id ? updatedRoadmap : roadmap
       );
-      await AsyncStorage.setItem(ROADMAPS_KEY, JSON.stringify(updatedList));
+      await AsyncStorage.setItem(ROADMAPS_STORAGE_KEY, JSON.stringify(updatedList));
     } catch (error) {
       console.error('Error updating roadmap:', error);
     }
@@ -76,9 +76,65 @@ export const RoadmapModel =  {
     try {
       const currentRoadmaps = await this.getRoadmaps();
       const filteredList = currentRoadmaps?.filter(roadmap => roadmap.id !== id);
-      await AsyncStorage.setItem(ROADMAPS_KEY, JSON.stringify(filteredList));
+      await AsyncStorage.setItem(ROADMAPS_STORAGE_KEY, JSON.stringify(filteredList));
     } catch (error) {
       console.error('Error deleting roadmap:', error);
     }
+  },
+
+  /**
+   * Retrieves the data for one single, specific stage by its ID.
+   * @param id The ID of the stage to retrieve.
+   * @returns A promise that resolves to the found stage object, or null if not found.
+   */
+  async getStageById(stageId: string): Promise<StageInterface | null> {
+    const roadmaps = await this.getRoadmaps();
+    for (const roadmap of roadmaps) {
+      const foundStage = roadmap.stages.find(stage => stage.id === stageId);
+      if (foundStage) {
+        return foundStage;
+      }
+    }
+    return null;
+  },
+
+  /**
+   * Saves learning materials to a specific stage within a roadmap.
+   * @param stageId The ID of the stage to update.
+   * @param learningMaterials The array of learning materials to save.
+   */
+  async saveLearningMaterialsToStage(
+    stageId: string,
+    learningMaterials: LearningLine[]
+  ): Promise<void> {
+    try {
+      const roadmaps = await this.getRoadmaps();
+      let foundRoadmap: RoadmapInterface | null = null;
+      let foundStage: StageInterface | null = null;
+
+      for (const roadmap of roadmaps) {
+        const stage = roadmap.stages.find(s => s.id === stageId);
+        if (stage) {
+          foundRoadmap = roadmap;
+          foundStage = stage;
+          break;
+        }
+      }
+
+      if (!foundRoadmap || !foundStage) {
+        throw new Error(`Stage ${stageId} not found in any roadmap`);
+      }
+
+      const updatedStages = foundRoadmap.stages.map(s =>
+        s.id === stageId ? { ...s, learningMaterials: learningMaterials } : s
+      );
+
+      const updatedRoadmap = { ...foundRoadmap, stages: updatedStages };
+      await this.updateRoadmap(updatedRoadmap);
+      console.log(`Learning materials saved for stage ${stageId}`);
+    } catch (error) {
+      console.error('Error saving learning materials to stage:', error);
+    }
   }
+  
 }

@@ -1,31 +1,27 @@
-import { LearningMaterial } from '@/types/RoadmapInterface';
+import { LearningLine } from '@/types/RoadmapInterface';
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface VocabularyComponentProps {
-  material: LearningMaterial;
+interface LessonComponentProps {
+  material: LearningLine;
 }
 
-export const VocabularyComponent: React.FC<VocabularyComponentProps> = ({ material }) => {
+export const LessonComponent: React.FC<LessonComponentProps> = ({ material }) => {
   const handlePlaySound = (text: string, language: 'en' | 'native') => {
     console.log(`Playing sound for "${text}" in language "${language}"`);
   };
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <FontAwesome name="book" size={20} color="#c43b81" />
-        <Text style={styles.title}>{material.title}</Text>
-      </View>
       <View style={styles.listContainer}>
-        {material.items.map((item, index) => (
-          <View key={index} style={styles.vocabRow}>
+     
+          <View style={styles.vocabRow}>
             {/* English Word and Speaker */}
             <View style={styles.languageContainer}>
-              <Text style={styles.vocabText}>{item.en}</Text>
+              <Text style={styles.vocabText}>{material.en}</Text>
               <TouchableOpacity
-                onPress={() => handlePlaySound(item.en, 'en')}
+                onPress={() => handlePlaySound(material.en, 'en')}
                 style={styles.speakerButton}
               >
                 <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
@@ -34,16 +30,16 @@ export const VocabularyComponent: React.FC<VocabularyComponentProps> = ({ materi
 
             {/* Pashto/Dari Word and Speaker */}
             <View style={styles.languageContainer}>
-              <Text style={[styles.vocabText, styles.nativeText]}>{item.native}</Text>
+              <Text style={[styles.vocabText, styles.nativeText]}>{material.native}</Text>
               <TouchableOpacity
-                onPress={() => handlePlaySound(item.native, 'native')}
+                onPress={() => handlePlaySound(material.native, 'native')}
                 style={styles.speakerButton}
               >
                 <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
               </TouchableOpacity>
             </View>
           </View>
-        ))}
+        
       </View>
     </View>
   );
@@ -55,12 +51,10 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8, // Less padding at the bottom as rows have their own
-    marginVertical: 10,
-    elevation: 4, // Android shadow
-    shadowColor: '#000000', // iOS shadow
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    elevation: 4, 
+    shadowColor: '#000000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -86,7 +80,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#f5f5f5', // Lighter separator line
   },
@@ -97,7 +91,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   vocabText: {
-    fontSize: 18,
+    fontSize: 14,
     color: '#333333',
     flex: 1, // Allow text to wrap if it's long
   },

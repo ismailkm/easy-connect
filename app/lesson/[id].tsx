@@ -1,7 +1,11 @@
-import { MOCK_ROADMAPS } from '@/assets/data/mockRoadmap';
-import { VocabularyComponent } from '@/components/lesson/VocabularyComponent';
+import { LessonContentGeneratorAgent } from '@/agents/LessonContentGeneratorAgent';
+import { LessonComponent } from '@/components/lesson/LessonComponent';
 import FormButton from '@/components/ui/FormButton';
-import { StageInterface } from '@/types/RoadmapInterface';
+import { useGemma } from '@/context/GemmaProvider';
+import { RoadmapModel } from '@/models/RoadmapModel';
+import { UserModel } from '@/models/UserModel';
+import { LearningLine, StageInterface } from '@/types/RoadmapInterface';
+import UserInterface from '@/types/UserInterface';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -9,58 +13,82 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 export default function LessonScreen() {
   const { id } = useLocalSearchParams();
   const [stageContent, setStageContent] = useState<StageInterface | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [learningMaterials, setLearningMaterials] = useState<LearningLine[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [hasError, setEasError] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Loading lesson...");
   const router = useRouter();
+  const { generateResponse , translateBatch} = useGemma(); 
 
   useEffect(() => {
-    if (id) {
-      // Find the stage content based on the ID
-      let foundStage: StageInterface | null = null;
-      for (const roadmap of MOCK_ROADMAPS) {
-        foundStage = roadmap.stages.find(stage => stage.id === id) || null;
-        if (foundStage) break;
+    const loadUserData = async () => {
+      try {
+        const userData = await UserModel.getUserDetails();
+        if (userData) {
+          getStageLessions(userData);
+        }
+      } catch (error) {
+        setEasError(true);
+        setLoadingMessage("Failed to load user data. Please try again.");
       }
-      setStageContent(foundStage);
+    };
+    loadUserData();
+  }, []);
+
+  const getStageLessions = async (userData: UserInterface) => {
+    setLoading(true);
+    try {
+      const stage = await RoadmapModel.getStageById(id as string);
+      if (!stage) {
+          throw new Error('Stage title or goal is undefined');
+      }
+      setStageContent(stage);
+      if (stage.learningMaterials && stage.learningMaterials.length > 0) {
+        setLearningMaterials(stage.learningMaterials);
+      } else {
+        console.log("asfda here")
+        setLoadingMessage("Generating new lessons for you. Please wait.")
+        const lessonsLines: LearningLine[] = await LessonContentGeneratorAgent.generateLessonContent(generateResponse, translateBatch, stage.title, stage.goal, userData);
+        await RoadmapModel.saveLearningMaterialsToStage(id as string, lessonsLines);
+        setLearningMaterials(lessonsLines);
+      }
+    } catch (error) {
+      setEasError(true);
+      setLoadingMessage(`Failed to generate lesson content. Please try again.${error?.toString()}`);
+    } finally {
       setLoading(false);
     }
-  }, [id]);
+  }
 
   return (
-    (loading)?
-        <View style={styles.loadingContainer}>
-            <Text>Loading lesson...</Text>
+    
+    <View style={styles.container}>
+      <View>
+        <Text style={styles.stageTitle}>{stageContent?.title}</Text>
+        <Text style={styles.stageDuration}>{stageContent?.duration}</Text>
+        <View style={styles.goalContainer}>
+            <Text style={styles.goalTitle}>Goal</Text>
+            <Text style={styles.goalText}>{stageContent?.goal}</Text>
         </View>
-    :
-        (!stageContent) ?
-            <View style={styles.container}>
-                <Text style={styles.errorText}>Lesson content not found.</Text>
-            </View>
-        :
-            <View style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    <View>
-                        <Text style={styles.stageTitle}>{stageContent.title}</Text>
-                        <Text style={styles.stageDuration}>Duration: {stageContent.duration}</Text>
-                    </View>
-                    <View style={styles.goalContainer}>
-                        <Text style={styles.goalTitle}>Goal:</Text>
-                        <Text style={styles.goalText}>{stageContent.goal}</Text>
-                    </View>
+      </View>
+      {(loading || hasError )? (
+        <View style={styles.loadingContainer}>
+          <Text>{loadingMessage}</Text>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     
-                    {stageContent.learningMaterials.map((material, index) => {
-                        switch (material.type) {
-                        case 'vocabulary':
-                            return <VocabularyComponent key={index} material={material} />;
-                        default:
-                            return null;
-                        }
-                    })}
-                    <View >
-                      <FormButton title="Start Quiz" onPress={() => router.push(`/quiz/${id}`)} />
-                    </View>
-                </ScrollView>
-                
-            </View>
+          {learningMaterials?.map((material, index) => {
+            return <LessonComponent key={index} material={material} />;
+          })}
+          <View style={{marginTop: 20}}>
+            <FormButton title="Start Quiz" onPress={() => router.push(`/quiz/${id}`)} />
+          </View>
+        </ScrollView>
+      )}
+    </View>
+        
+            
   );
 }
 
@@ -72,7 +100,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: 50,
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   errorText: {

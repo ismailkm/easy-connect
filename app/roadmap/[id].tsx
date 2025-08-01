@@ -12,7 +12,8 @@ export default function RoadmapDetailScreen() {
 
   useEffect(() => {
     const loadRoadmaps = async () => {
-      let foundRoadmap = await RoadmapModel.getRoadmapById(id as string);
+      const roadmapId = Array.isArray(id) ? id[0] : id;
+      let foundRoadmap = await RoadmapModel.getRoadmapById(roadmapId);
       setRoadmap(foundRoadmap || null);
     };
     loadRoadmaps();

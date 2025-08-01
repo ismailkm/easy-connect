@@ -3,18 +3,16 @@ import { AppState, NativeModules } from 'react-native';
 
 const { GemmaModule } = NativeModules;
 
-// 1. Define the "shape" of the context data
 interface GemmaContextType {
   isModelLoaded: boolean;
   isLoading: boolean;
   error: string | null;
   generateResponse: (prompt: string) => Promise<string>;
+  translateBatch: (lines: string[], targetLang: 'pashto' | 'dari') => Promise<string[]>;
 }
 
-// 2. Create the context with a default value
 const GemmaContext = createContext<GemmaContextType | undefined>(undefined);
 
-// 3. Create the Provider component
 interface GemmaProviderProps {
   children: ReactNode;
 }
@@ -70,12 +68,10 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     return () => {
       appStateSubscription.remove();
     };
-  }, []); // Empty dependency array ensures this runs only once
+  }, []); 
 
-  // --- Functions to be exposed to the rest of the app ---
 
   const generateResponse = async (prompt: string): Promise<string> => {
-    // This is our central safety check
     if (!isModelLoaded) {
       throw new Error('AI Model is not loaded yet. Please wait a moment and try again.');
     }
@@ -87,18 +83,29 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     return await GemmaModule.generateResponse(prompt);
   };
 
-  // The value that will be provided to all children components
+  const translateBatch = async (
+    lines: string[],
+    targetLang: 'pashto' | 'dari'
+  ): Promise<string[]> => {
+    if (!GemmaModule?.translateBatch) {
+      throw new Error('The native translateBatch function is not available.');
+    }
+    console.log(`GemmaProvider: Translating batch of ${lines.length} lines to ${targetLang}...`);
+    return await GemmaModule.translateBatch(lines, targetLang);
+  };
+
+
   const value = {
     isModelLoaded,
     isLoading,
     error,
     generateResponse,
+    translateBatch,
   };
 
   return <GemmaContext.Provider value={value}>{children}</GemmaContext.Provider>;
 };
 
-// 4. Create the custom hook for easy consumption
 export const useGemma = (): GemmaContextType => {
   const context = useContext(GemmaContext);
   if (context === undefined) {
