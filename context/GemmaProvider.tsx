@@ -9,6 +9,7 @@ interface GemmaContextType {
   error: string | null;
   generateResponse: (prompt: string) => Promise<string>;
   translateBatch: (lines: string[], targetLang: 'pashto' | 'dari') => Promise<string[]>;
+  speak: (text: string, langCode: LanguageCode) => Promise<void>;
 }
 
 const GemmaContext = createContext<GemmaContextType | undefined>(undefined);
@@ -94,6 +95,16 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     return await GemmaModule.translateBatch(lines, targetLang);
   };
 
+  const speak = async (text: string, langCode: LanguageCode): Promise<void> => {
+    if (!GemmaModule?.speak) {
+      throw new Error('The native speak function is not available.');
+    }
+    try {
+      await GemmaModule.speak(text, langCode);
+    } catch (e: any) {
+      console.error("TTS Error:", e.message);
+    }
+  };
 
   const value = {
     isModelLoaded,
@@ -101,6 +112,7 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     error,
     generateResponse,
     translateBatch,
+    speak,
   };
 
   return <GemmaContext.Provider value={value}>{children}</GemmaContext.Provider>;

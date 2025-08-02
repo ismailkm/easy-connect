@@ -1,3 +1,4 @@
+import { useGemma } from '@/context/GemmaProvider';
 import { LearningLine } from '@/types/RoadmapInterface';
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
@@ -8,8 +9,15 @@ interface LessonComponentProps {
 }
 
 export const LessonComponent: React.FC<LessonComponentProps> = ({ material }) => {
-  const handlePlaySound = (text: string, language: 'en' | 'native') => {
-    console.log(`Playing sound for "${text}" in language "${language}"`);
+  const { speak } = useGemma();
+
+  const handlePlaySound = async (text: string, language: string) => {
+    try {
+      const langCode: LanguageCode = ( language === 'en' ) ? 'en' : 'fa-ir';
+      await speak(text, langCode);
+    } catch (e) {
+      console.error('Failed to play sound:', e);
+    }
   };
 
   return (

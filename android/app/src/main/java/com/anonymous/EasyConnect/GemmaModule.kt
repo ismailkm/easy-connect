@@ -21,6 +21,9 @@ import com.facebook.react.bridge.Arguments
 import kotlinx.coroutines.*
 import com.google.mlkit.common.model.DownloadConditions;
 
+import android.speech.tts.TextToSpeech
+import java.util.Locale
+
 class GemmaModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     override fun getName() = "GemmaModule"
@@ -29,6 +32,17 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
 
     private val translators = mutableMapOf<String, Translator>()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private var textToSpeech: TextToSpeech? = null
+
+    init {
+        textToSpeech = TextToSpeech(reactContext) {
+            if (it == TextToSpeech.SUCCESS) {
+                textToSpeech?.language = Locale.US
+            } else {
+                Log.e("GemmaModule", "TextToSpeech initialization failed")
+            }
+        }
+    }
 
     @ReactMethod
     fun loadModel(promise: Promise) {
@@ -132,8 +146,36 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
             }
     }
 
+    @ReactMethod
+    fun speak(text: String, languageCode: String, promise: Promise) {
+        if (textToSpeech == null) {
+            Log.e("GemmaModule", "TextToSpeech not initialized.")
+            promise.reject("TTS_ERROR", "TextToSpeech not initialized.")
+            return
+        }
+
+        val locale = when (languageCode.toLowerCase()) {
+            "en" -> Locale.UK
+            "fa-ir" -> Locale("ur", "PK") // Farsi/Persian for Iran
+            else -> Locale.UK // Default to US English
+        }
+        
+        val result = textToSpeech?.setLanguage(locale)
+
+        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+            Log.e("GemmaModule", "Language not supported or missing data: $languageCode")
+            promise.reject("TTS_ERROR", "Language not supported or missing data: $languageCode")
+            return
+        }
+
+        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utteranceId")
+        promise.resolve(true)
+    }
+
     override fun onCatalystInstanceDestroy() {
         translators.values.forEach { it.close() }
         coroutineScope.cancel()
+        textToSpeech?.stop()
+        textToSpeech?.shutdown()
     }
 }
