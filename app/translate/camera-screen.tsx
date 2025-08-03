@@ -1,8 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -14,8 +14,8 @@ export default function CameraScreen() {
     if (cameraRef.current) {
       try {
         const photo = await cameraRef.current.takePictureAsync();
-        router.push({ 
-          pathname: '/translate/preview', 
+        router.replace({ 
+          pathname: '/preview-translate', 
           params: { photoUri: photo.uri }
         });
       } catch (error) {

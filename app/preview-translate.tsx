@@ -8,7 +8,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function PreviewScreen() {
+export default function PreviewTranslateScreen() {  
   const { recognizeText, translateBatch, speak  } = useGemma();
   const { photoUri } = useLocalSearchParams<{ photoUri: string }>();
   const [isLoadingTranslation, setIsLoadingTranslation] = useState(true);
@@ -18,6 +18,7 @@ export default function PreviewScreen() {
   const [summary, setSummary] = useState<string>('');
 
   useEffect(() => {
+    console.log("trasnlate preview ")
     const processImage = async () => {
       if (!photoUri) return;
       try {

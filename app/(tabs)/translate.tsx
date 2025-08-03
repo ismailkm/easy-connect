@@ -31,11 +31,11 @@ export default function TranslateScreen() {
             onClose={() => setShowImageSourceModal(false)}
             onTakePicture={() => {
               setShowImageSourceModal(false);
-              router.push('/translate/camera-screen');
+              router.replace('/translate/camera-screen');
             }}
             onSelectFromGallery={() => {
               setShowImageSourceModal(false);
-              router.push('/translate/select-image');
+              router.replace('/translate/select-image');
             }}
           />
     </View>

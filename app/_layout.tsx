@@ -1,9 +1,10 @@
 import { GemmaProvider, useGemma } from '@/context/GemmaProvider';
 import { StorageHelper } from '@/models/StorageHelper';
+import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import 'react-native-reanimated';
 
 export default function RootLayout() {
@@ -67,6 +68,19 @@ function AppLayout() {
       <Stack.Screen name="quiz" />
       <Stack.Screen name="create-roadmap" options={{ headerShown: true, title: 'Create New Roadmap' }}/>
       <Stack.Screen name="translate" />
+      <Stack.Screen name="preview-translate" 
+        options={({ navigation }) => ({
+          title: 'Preview & Translate',
+          headerShown: true,
+          headerLeft: () => {
+            const router = useRouter();
+            return (
+              <TouchableOpacity onPress={() => router.replace('/(tabs)/translate')}>
+                <Ionicons name="arrow-back" size={24} color="black" />
+              </TouchableOpacity>
+            );
+          },
+      })}/>
       <Stack.Screen name="+not-found" />
     </Stack>
   );
