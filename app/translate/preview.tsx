@@ -7,11 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 export default function PreviewScreen() {
   const { recognizeText, translateBatch, speak  } = useGemma();
   const { photoUri } = useLocalSearchParams<{ photoUri: string }>();
   const [isLoadingTranslation, setIsLoadingTranslation] = useState(true);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const [englishLines, setEnglishLines] = useState<string[]>([]);
   const [nativeTranslation, setNativeTranslation] = useState<string[]>([]);
   const [summary, setSummary] = useState<string>('');
 
@@ -20,8 +22,10 @@ export default function PreviewScreen() {
       if (!photoUri) return;
       try {
         setIsLoadingTranslation(true);
-        const englishLines = await recognizeText(photoUri);
-        const nativeLines = await translateBatch(englishLines, 'dari');
+        const recognizedEnglishLines = await recognizeText(photoUri);
+ 
+        setEnglishLines(recognizedEnglishLines);
+        const nativeLines = await translateBatch(recognizedEnglishLines, 'dari');
         setNativeTranslation(nativeLines);
         setIsLoadingTranslation(false);
 
@@ -34,6 +38,9 @@ export default function PreviewScreen() {
 
       } catch (e) {
         // Handle errors
+      } finally {
+        setIsLoadingTranslation(false);
+        setIsLoadingSummary(false);
       }
     };
     processImage();
@@ -84,11 +91,12 @@ export default function PreviewScreen() {
           </View>
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Translation</Text>
-            {nativeTranslation.map((line, index) => (
+            {nativeTranslation.map((nativeLine, index) => (
               <TranslationLine 
                 key={index} 
-                text={line} 
-                onSpeak={() => handleSpeak(line)} 
+                englishText={englishLines[index] || ''}
+                nativeText={nativeLine} 
+                onSpeak={() => handleSpeak(nativeLine)} 
               />
             ))}
           </View>
