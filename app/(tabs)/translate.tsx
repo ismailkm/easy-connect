@@ -1,9 +1,14 @@
-import { StyleSheet } from 'react-native';
-import { Text, View } from '@/components/Themed';
 import { DashboardButton } from '@/components/DashboardButton';
-import { router } from 'expo-router';
+import { Text, View } from '@/components/Themed';
+import { ImageSourceModal } from '@/components/Translate/ImageSourceModal';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet } from 'react-native';
 
 export default function TranslateScreen() {
+  const [showImageSourceModal, setShowImageSourceModal] = useState(false);
+  const router = useRouter();
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Translate Screen</Text>
@@ -19,7 +24,19 @@ export default function TranslateScreen() {
             iconName="camera.fill"
             title="Upload Image"
             subtitle="Translate text from an image"
-            onPress={() => { /* TODO: Implement image upload */ }}
+            onPress={() => setShowImageSourceModal(true)}
+          />
+          <ImageSourceModal
+            visible={showImageSourceModal}
+            onClose={() => setShowImageSourceModal(false)}
+            onTakePicture={() => {
+              setShowImageSourceModal(false);
+              router.push('/translate/camera-screen');
+            }}
+            onSelectFromGallery={() => {
+              setShowImageSourceModal(false);
+              router.push('/translate/select-image');
+            }}
           />
     </View>
   );

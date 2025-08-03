@@ -10,6 +10,7 @@ interface GemmaContextType {
   generateResponse: (prompt: string) => Promise<string>;
   translateBatch: (lines: string[], targetLang: 'pashto' | 'dari') => Promise<string[]>;
   speak: (text: string, langCode: LanguageCode) => Promise<void>;
+  recognizeText: (imageUri: string) => Promise<string[]>;
 }
 
 const GemmaContext = createContext<GemmaContextType | undefined>(undefined);
@@ -106,6 +107,14 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     }
   };
 
+  const recognizeText = async (imageUri: string): Promise<string[]> => {
+    if (!GemmaModule?.recognizeTextFromImage) {
+      throw new Error('The native recognizeText function is not available.');
+    }
+    console.log(`GemmaProvider: Sending image to native OCR...`);
+    return await GemmaModule.recognizeTextFromImage(imageUri);
+  };
+
   const value = {
     isModelLoaded,
     isLoading,
@@ -113,6 +122,7 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     generateResponse,
     translateBatch,
     speak,
+    recognizeText,
   };
 
   return <GemmaContext.Provider value={value}>{children}</GemmaContext.Provider>;

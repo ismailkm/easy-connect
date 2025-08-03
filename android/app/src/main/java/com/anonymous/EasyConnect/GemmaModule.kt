@@ -7,7 +7,6 @@ import com.facebook.react.bridge.Promise
 import android.util.Log
 import java.io.File
 
-// V-- We are importing from the NEW MediaPipe library --V
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import com.google.mediapipe.tasks.genai.llminference.LlmInference.LlmInferenceOptions
 
@@ -23,6 +22,11 @@ import com.google.mlkit.common.model.DownloadConditions;
 
 import android.speech.tts.TextToSpeech
 import java.util.Locale
+
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import android.net.Uri
 
 class GemmaModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -170,6 +174,49 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
 
         textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utteranceId")
         promise.resolve(true)
+    }
+
+    @ReactMethod
+    fun recognizeTextFromImage(imageUri: String, promise: Promise) {
+        Log.d("GemmaModule", "Received image for OCR: $imageUri")
+        
+        // --- A. Create the Text Recognizer instance ---
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        
+        // --- B. Create an InputImage object from the URI ---
+        val image: InputImage
+        try {
+            val uri = Uri.parse(imageUri)
+            image = InputImage.fromFilePath(reactContext, uri)
+        } catch (e: Exception) {
+            Log.e("GemmaModule", "Failed to create InputImage from URI", e)
+            promise.reject("OCR_IMAGE_ERROR", "Could not read the image file from the URI.", e)
+            return
+        }
+
+        // --- C. Process the image ---
+         recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                // 1. Create a React Native WritableArray to hold the lines.
+                val lineArray = Arguments.createArray()
+
+                // 2. Loop through each TextBlock, and then each Line within the block.
+                for (block in visionText.textBlocks) {
+                    for (line in block.lines) {
+                        // 3. Add the text of each line to our array.
+                        lineArray.pushString(line.text)
+                    }
+                }
+
+                Log.d("GemmaModule", "OCR successful. Found ${lineArray.size()} lines.")
+                // 4. Resolve the promise with the array of lines.
+                promise.resolve(lineArray)
+                // --- END OF NEW LOGIC ---
+            }
+            .addOnFailureListener { e ->
+                Log.d("GemmaModule", "OCR failed.", e)
+                promise.reject("OCR_PROCESS_ERROR", "Failed to recognize text.", e)
+            }
     }
 
     override fun onCatalystInstanceDestroy() {
