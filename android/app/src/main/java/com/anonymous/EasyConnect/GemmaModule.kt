@@ -31,8 +31,10 @@ import android.net.Uri
 class GemmaModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     override fun getName() = "GemmaModule"
+
     private val modelName = "gemma3-1B-it-int4.task"
     private var llmInference: LlmInference? = null
+    private var isNativeModelLoaded: Boolean = false
 
     private val translators = mutableMapOf<String, Translator>()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -50,6 +52,11 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
 
     @ReactMethod
     fun loadModel(promise: Promise) {
+        if (isNativeModelLoaded && llmInference != null) {
+            Log.d("GemmaModule", "Model already loaded on native side. Skipping reload.")
+            promise.resolve("Model '$modelName' already loaded.")
+            return
+        }
         try {
             Log.d("GemmaModule", "Starting model loading with MediaPipe...")
 
@@ -69,6 +76,7 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
 
             // 3. Create the LlmInference instance from MediaPipe.
             llmInference = LlmInference.createFromOptions(reactContext, options)
+            isNativeModelLoaded = true // Set to true after successful load
 
             modelFile.delete()
             Log.d("GemmaModule", "Temporary model file deleted.")
@@ -77,6 +85,7 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
             promise.resolve("Model '$modelName' loaded successfully with MediaPipe.")
 
         } catch (e: Exception) {
+            isNativeModelLoaded = false // Reset on failure
             Log.e("GemmaModule", "FAILURE: An error occurred during MediaPipe model loading.", e)
             promise.reject("MODEL_LOAD_ERROR", "Failed to load model: ${e.message}")
         }
@@ -219,10 +228,32 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
             }
     }
 
+
     override fun onCatalystInstanceDestroy() {
+
+        super.onCatalystInstanceDestroy()
+
+        Log.d("GemmaModule", "Cleaning up native resources...")
+
+        // --- Clean up Gemma Model ---
+        llmInference?.close()
+        llmInference = null
+        isNativeModelLoaded = false
+        Log.d("GemmaModule", "LlmInference instance released.")
+
+        // --- Clean up ML Kit Translators ---
         translators.values.forEach { it.close() }
-        coroutineScope.cancel()
+        translators.clear()
+        Log.d("GemmaModule", "ML Kit translators closed.")
+
+        // --- Clean up TTS Engine ---
         textToSpeech?.stop()
         textToSpeech?.shutdown()
+        textToSpeech = null
+        Log.d("GemmaModule", "TextToSpeech engine shut down.")
+
+        // --- Cancel any running coroutines ---
+        coroutineScope.cancel()
+        Log.d("GemmaModule", "Coroutine scope cancelled.")
     }
 }
