@@ -1,0 +1,147 @@
+{
+  "topics": [
+    {
+      "id": "gp_registration",
+      "category_en": "Healthcare",
+      "category_native": "مراقبت‌های صحی",
+      "title_en": "How to Register with a Doctor (GP)",
+      "title_native": "چطور با داکتر (جی‌پی) ثبت نام کنید",
+      "content_en": "To register with a GP you should visit a local surgery and complete a GMS1 form. Bring proof of your address (for example a recent utility bill or bank statement) if you have one, but lack of documents should not stop you from registering.",
+      "content_native": "برای ثبت‌نام با داکتر جی‌پی (GP)، به کلینیک محلی بروید و فورمه GMS1 را خانه‌پری کنید. اگر بل برق یا صورت‌حساب بانکی به عنوان مدرک آدرس دارید، با خود بیاورید. اما نداشتن این اسناد نباید مانع ثبت‌نام شما شود. هر فرد، حتی بدون مدرک، حق دسترسی به داکتر خانواده را دارد.",
+      "keywords": [
+        "doctor", "gp", "health", "register", "surgery", "GMS1", "address", "medical", "clinic", "health care",
+        "داکتر", "جی‌پی", "صحت", "ثبت نام", "کلینیک", "فورمه", "آدرس", "پزشک", "مراقبت صحی", "سلامتی"
+      ]
+    },
+    {
+      "id": "nhs_111",
+      "category_en": "Healthcare",
+      "category_native": "مراقبت‌های صحی",
+      "title_en": "When to Call NHS 111",
+      "title_native": "چه وقت به NHS 111 زنگ بزنید؟",
+      "content_en": "Dial 111 free from any phone for non-emergency medical advice when your GP is closed or you are unsure where to go. Trained advisers will direct you to the right service or send an ambulance if necessary.",
+      "content_native": "برای مشوره طبی غیر اضطراری، زمانی که جی‌پی شما بسته است یا نمی‌دانید کجا بروید، از هر تلفنی به صورت رایگان ۱۱۱ را شماره‌گیری کنید. مشاوران آموزش دیده شما را به خدمات مناسب راهنمایی می‌کنند یا در صورت لزوم آمبولانس می‌فرستند.",
+      "keywords": [
+        "NHS", "111", "medical advice", "non-emergency", "hospital", "call", "phone", "help",
+        "ان اچ اس", "۱۱۱", "مشوره طبی", "غیر اضطراری", "زنگ", "تلفن", "کمک"
+      ]
+    },
+    {
+      "id": "prescription_costs",
+      "category_en": "Healthcare",
+      "category_native": "مراقبت‌های صحی",
+      "title_en": "Paying for Prescriptions",
+      "title_native": "پرداخت برای نسخه‌ها",
+      "content_en": "In England most adults pay a set fee for each prescription unless they are exempt (for example, pregnant women, some benefits, or low income). Ask your pharmacist about the NHS Low Income Scheme (HC2 certificate) if you need help with costs.",
+      "content_native": "در انگلستان، اکثر بزرگ‌سالان برای هر نسخه یک هزینه ثابت پرداخت می‌کنند، مگر اینکه معاف باشند (مثلاً زنان باردار، برخی از افرادی که کمک‌هزینه دریافت می‌کنند یا با درآمد کم). اگر برای هزینه‌ها به کمک نیاز دارید، از دواخانه خود درباره طرح درآمد پایین NHS (گواهی HC2) سوال کنید.",
+      "keywords": [
+        "prescription", "pharmacy", "cost", "HC2", "exemption", "medicine", "money",
+        "نسخه", "دواخانه", "هزینه", "معافیت", "اچ سی ۲", "پول", "دارو"
+      ]
+    },
+    {
+      "id": "open_bank_account",
+      "category_en": "Banking",
+      "category_native": "بانکداری",
+      "title_en": "Opening a Bank Account",
+      "title_native": "باز کردن حساب بانکی",
+      "content_en": "Most banks ask for proof of identity (passport or biometric residence permit) and proof of address. If you do not yet have utility bills, some banks accept a letter from your GP or a benefits office. Online-only banks may accept digital documents.",
+      "content_native": "اکثر بانک‌ها برای باز کردن حساب، مدرک هویت (پاسپورت یا کارت اقامت بایومتریک) و مدرک آدرس می‌خواهند. اگر هنوز بل مصرفی ندارید، برخی بانک‌ها نامه از جی‌پی یا اداره کمک‌هزینه را می‌پذیرند. بانک‌های آنلاین ممکن است اسناد دیجیتال را قبول کنند.",
+      "keywords": [
+        "bank", "account", "identity", "address", "online bank", "money", "BRP",
+        "بانک", "حساب", "هویت", "آدرس", "بانک آنلاین", "پول", "مدرک"
+      ]
+    },
+    {
+      "id": "renting_flat",
+      "category_en": "Housing",
+      "category_native": "مسکن",
+      "title_en": "Renting a Flat and Tenancy Agreements",
+      "title_native": "اجاره کردن آپارتمان و قراردادهای اجاره",
+      "content_en": "Before paying any money ask for a written tenancy agreement. In England deposits must be protected in a government-approved scheme. Your landlord must give you gas safety and energy performance certificates.",
+      "content_native": "قبل از پرداخت هر مبلغی، قرارداد اجاره کتبی بخواهید. در انگلستان، مبلغ رهن (deposit) باید در یک طرح تأیید شده دولتی حفاظت شود. صاحب‌خانه شما باید گواهی‌های ایمنی گاز و عملکرد انرژی را به شما بدهد.",
+      "keywords": [
+        "rent", "flat", "tenancy", "deposit", "landlord", "agreement", "house", "home",
+        "اجاره", "آپارتمان", "قرارداد", "رهن", "صاحب‌خانه", "خانه", "کرایه"
+      ]
+    },
+    {
+      "id": "school_enrolment",
+      "category_en": "Education",
+      "category_native": "تحصیل",
+      "title_en": "Enrolling Children in School",
+      "title_native": "ثبت‌نام کودکان در مکتب",
+      "content_en": "Apply through your local council for a school place. You will need proof of address and your child’s passport or birth certificate. If classes are full, the council must offer an alternative. School is free for children aged 5-16.",
+      "content_native": "برای ثبت‌نام در مکتب، از طریق شورای محلی خود اقدام کنید. شما به مدرک آدرس و پاسپورت یا شناسنامه کودک خود نیاز خواهید داشت. اگر صنف‌ها تکمیل باشند، شورا باید گزینه جایگزینی را پیشنهاد کند. تحصیل برای کودکان ۵ تا ۱۶ سال رایگان است.",
+      "keywords": [
+        "school", "enrol", "council", "child", "education", "register", "student",
+        "مکتب", "ثبت‌نام", "شورا", "کودک", "تحصیل", "دانش‌آموز"
+      ]
+    },
+    {
+      "id": "ni_number",
+      "category_en": "Employment",
+      "category_native": "اشتغال",
+      "title_en": "Getting a National Insurance Number",
+      "title_native": "دریافت شماره بیمه ملی",
+      "content_en": "You need a National Insurance (NI) number to work or claim benefits. Call the National Insurance helpline or apply online. You may need to attend an appointment and show identity documents.",
+      "content_native": "برای کار کردن یا دریافت کمک‌هزینه، به شماره بیمه ملی (NI) نیاز دارید. به خط راهنمای بیمه ملی زنگ بزنید یا آنلاین درخواست دهید. ممکن است لازم باشد در یک قرار ملاقات حاضر شوید و اسناد هویتی خود را نشان دهید.",
+      "keywords": [
+        "NI", "insurance", "work", "benefits", "number", "job", "NINo", "helpline", "apply",
+        "ان آی", "بیمه", "کار", "کمک‌هزینه", "شماره", "شغل", "درخواست", "خط راهنما"
+      ]
+    },
+    {
+      "id": "oyster_card",
+      "category_en": "Transport",
+      "category_native": "ترانسپورت",
+      "title_en": "Using Oyster and Contactless Cards",
+      "title_native": "استفاده از کارت‌های اویستر و بی‌تماس",
+      "content_en": "In London you can pay for buses and trains with an Oyster card or any contactless bank card. Tap in at the start and tap out at the end of your journey. Daily and weekly caps limit how much you pay.",
+      "content_native": "در لندن می‌توانید برای بس‌ها و قطارها با کارت اویستر یا هر کارت بانکی بی‌تماس پرداخت کنید. در ابتدای سفر 'تپ' و در پایان سفر 'تپ' کنید. سقف روزانه و هفتگی میزان پرداختی شما را محدود می‌کند.",
+      "keywords": [
+        "Oyster", "contactless", "bus", "train", "fare", "cap", "tube", "london", "travel",
+        "اویستر", "بی‌تماس", "بس", "قطار", "کرایه", "لندن", "سفر", "مترو"
+      ]
+    },
+    {
+      "id": "emergency_services",
+      "category_en": "Emergency",
+      "category_native": "اضطراری",
+      "title_en": "Calling 999 vs 101",
+      "title_native": "زنگ زدن به ۹۹۹ در مقابل ۱۰۱",
+      "content_en": "Call 999 for life-threatening emergencies (police, fire, ambulance). Call 101 for non-emergency police matters such as reporting a stolen phone. Both numbers are free.",
+      "content_native": "برای موارد اضطراری که تهدید کننده زندگی هستند (پولیس، آتش‌نشانی، آمبولانس) به ۹۹۹ زنگ بزنید. برای مسائل پولیسی غیر اضطراری مانند گزارش دادن یک تلفن دزدی شده به ۱۰۱ زنگ بزنید. هر دو شماره رایگان هستند.",
+      "keywords": [
+        "999", "101", "emergency", "police", "ambulance", "fire", "call", "phone", "help", "crime",
+        "۹۹۹", "۱۰۱", "اضطراری", "پولیس", "آمبولانس", "آتش‌نشانی", "زنگ", "تلفن", "کمک", "جرم"
+      ]
+    },
+    {
+      "id": "universal_credit",
+      "category_en": "Benefits",
+      "category_native": "کمک‌هزینه‌ها",
+      "title_en": "Applying for Universal Credit",
+      "title_native": "درخواست برای یونیورسال کریدیت",
+      "content_en": "Universal Credit is a single monthly payment that replaces several benefits. Apply online on the gov.uk website. You will need an email address, bank account, and identity documents. Jobcentre staff can help if you have difficulties.",
+      "content_native": "یونیورسال کریدیت یک پرداخت ماهانه واحد است که جایگزین چندین کمک‌هزینه می‌شود. به صورت آنلاین در وب‌سایت gov.uk درخواست دهید. به یک ایمیل آدرس، حساب بانکی و اسناد هویتی نیاز دارید. کارمندان Jobcentre می‌توانند در صورت داشتن مشکل به شما کمک کنند.",
+      "keywords": [
+        "Universal Credit", "benefits", "claim", "gov.uk", "Jobcentre", "apply", "money", "help",
+        "یونیورسال کریدیت", "کمک‌هزینه‌ها", "درخواست", "جاب‌سنتر", "پول", "کمک"
+      ]
+    },
+    {
+      "id": "queue_etiquette",
+      "category_en": "Cultural",
+      "category_native": "فرهنگی",
+      "title_en": "Queueing Etiquette",
+      "title_native": "آداب صف ایستادن",
+      "content_en": "In the UK people usually form a queue and take their turn in shops, buses, and services. Joining at the end and waiting politely is considered respectful. Pushing ahead or skipping the queue is frowned upon.",
+      "content_native": "در بریتانیا، مردم معمولاً در فروشگاه‌ها، بس‌ها و خدمات، در صف می‌ایستند و منتظر نوبت خود می‌مانند. در انتهای صف ایستادن و با احترام منتظر ماندن، نشانه احترام است. جلو زدن یا از صف رد شدن کار ناپسندی است.",
+      "keywords": [
+        "queue", "line", "etiquette", "respect", "culture", "waiting", "turn",
+        "صف", "قطار", "آداب", "احترام", "فرهنگ", "نوبت", "انتظار"
+      ]
+    }
+  ]
+}

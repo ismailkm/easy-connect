@@ -169,15 +169,16 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   summaryContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     padding: 12,
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
+    gap: 12,
   },
   summaryText: {
     flex: 1,
-    marginRight: 8,
+    textAlign: 'right',
   },
   loadingContainer: {
     flex: 1,
