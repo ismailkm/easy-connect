@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function PreviewTranslateScreen() {  
-  const { recognizeText, translateBatch  } = useGemma();
+  const { recognizeText, translateBatch, generateResponse  } = useGemma();
   const { photoUri } = useLocalSearchParams<{ photoUri: string }>();
   const [isLoadingTranslation, setIsLoadingTranslation] = useState(true);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -31,7 +31,7 @@ export default function PreviewTranslateScreen() {
 
         setIsLoadingSummary(true);
         const fullEnglishText = englishLines.join(' ');
-        const englishSummary = await SummaryAgent.generateSummary(fullEnglishText);
+        const englishSummary = await SummaryAgent.generateSummary(generateResponse, fullEnglishText);
         const translatedSummaryLines = await translateBatch([englishSummary], 'dari');
         setSummary(translatedSummaryLines.join('\n')); 
         setIsLoadingSummary(false);

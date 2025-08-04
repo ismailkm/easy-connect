@@ -1,5 +1,3 @@
-import { NativeModules } from 'react-native';
-const { GemmaModule } = NativeModules;
 
 const buildInstruction = (textToSummarize: string): string => {
   const role = `You are an expert AI assistant that is highly skilled at summarizing English text into a concise, easy-to-understand paragraph.`;
@@ -23,10 +21,11 @@ ${textToSummarize}
 
 
 export const generateSummary = async (
+  generateResponse: (prompt: string) => Promise<string>,
   fullText: string
 ): Promise<string> => {
   const prompt = buildInstruction(fullText);
-  const summary = await GemmaModule.generateResponse(prompt);
+  const summary = await generateResponse(prompt);
   return summary.trim(); 
 };
 

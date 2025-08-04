@@ -3,13 +3,14 @@ import { DashboardButton } from '@/components/DashboardButton';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 import { Text, View } from '@/components/Themed';
 import { SoundPlayer } from '@/components/ui/SoundPlayer';
+import { useGemma } from '@/context/GemmaProvider';
 import { TextSegment } from '@/types/KnowledgebaseInterface';
 import { KnowledgebaseHelper } from '@/utils/KnowledgebaseHelper';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TextInput } from 'react-native';
 
 export default function PracticeEnglishScreen() {
-  
+  const { generateResponse } = useGemma();
   const playId = String(Date.now());
   
   const [question, setQuestion] = useState('');
@@ -22,7 +23,7 @@ export default function PracticeEnglishScreen() {
     setAnswer('')
     try{
         let bestTopic = await KnowledgebaseHelper.findBestTopic(question);
-        const finalAnswer = await QnaAgent.getAnswer(question, bestTopic, 'dari');
+        const finalAnswer = await QnaAgent.getAnswer(generateResponse, question, bestTopic, 'dari');
         const answerSegments = KnowledgebaseHelper.parseBoldMarkdown(finalAnswer);
         setAnswer(finalAnswer);
         setAnswerSegments(answerSegments);

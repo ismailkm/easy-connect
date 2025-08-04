@@ -1,7 +1,4 @@
 import { KnowledgebaseTopic } from '@/types/KnowledgebaseInterface';
-import { NativeModules } from 'react-native';
-const { GemmaModule } = NativeModules;
-
 
 //  The RAG Prompt Builder 
 // This builds the prompt for when we HAVE found a relevant context.
@@ -31,6 +28,7 @@ const buildGeneralHelpPrompt = (question: string): string => {
 
 
 export const getAnswer = async (
+  generateResponse: (prompt: string) => Promise<string>,
   question: string,
   bestTopic: KnowledgebaseTopic | null, 
   language: Language
@@ -49,7 +47,7 @@ export const getAnswer = async (
     prompt = buildGeneralHelpPrompt(question);
   }
 
-  return await GemmaModule.generateResponse(prompt);
+  return await generateResponse(prompt);
 };
 
 
