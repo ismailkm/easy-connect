@@ -1,9 +1,11 @@
 import { Text, View } from '@/components/Themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
+import { useGemma } from '@/context/GemmaProvider';
 import { MessageInterface } from '@/types/MessageInterface';
+import { FontAwesome } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PracticeEnglishScreen() {
@@ -14,35 +16,75 @@ export default function PracticeEnglishScreen() {
   ]);
   const [inputText, setInputText] = useState('');
   const [inputHeight, setInputHeight] = useState(35);
+  const { translateBatch, speak } = useGemma();
+  const [isTranslating, setIsTranslating] = useState(false);
 
-  const handleSendMessage = () => {
-    if (inputText.trim()) {
-      const newMessage: MessageInterface = {
-        id: String(messages.length + 1),
-        text: inputText.trim(),
-        sender: 'user',
-      };
-      setMessages([...messages, newMessage]);
-      setInputText('');
-      setInputHeight(35); // Reset input height
-      if (flatListRef.current) {
-        flatListRef.current.scrollToEnd({ animated: true });
+  const handleSendMessage = async () => {
+    const textToTranslate = inputText.trim();
+    if (!textToTranslate || isTranslating) return;
+
+    // 1. Add the user's message to the chat
+    const userMessage: MessageInterface = {
+      id: String(Date.now()),
+      text: textToTranslate,
+      sender: 'user',
+    };
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    setInputHeight(35);
+    
+    setIsTranslating(true);
+
+    try {
+      const resultArray = await translateBatch([textToTranslate], 'dari');
+      
+      let translatedText = "Translation failed.";
+      if (resultArray && resultArray.length > 0) {
+        translatedText = resultArray[0];
       }
-      // Simulate AI response
-      setTimeout(() => {
-        const aiResponse: MessageInterface = {
-          id: String(messages.length + 2),
-          text: `AI: You said: "${inputText.trim()}"`, // Placeholder AI response
-          sender: 'ai',
-        };
-        setMessages((prevMessages) => [...prevMessages, aiResponse]);
-      }, 1000);
+      
+      const translatedMessage: MessageInterface = {
+        id: String(Date.now() + 1),
+        text: translatedText,
+        sender: 'ai',
+      };
+      setMessages((prevMessages) => [...prevMessages, translatedMessage]);
+
+    } catch (e: any) {
+      console.error("Translation error in chat:", e);
+      const errorMessage: MessageInterface = {
+        id: String(Date.now() + 1),
+        text: "Sorry, an error occurred during translation.",
+        sender: 'ai',
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsTranslating(false);
     }
+  };
+
+  const handlePlaySound = (text: string, sender: 'user' | 'ai') => {
+    let langCode:LanguageCode = (sender === 'user') ? 'en' : 'fa-ir';
+    speak(text, langCode);
   };
 
   const renderMessage = ({ item }: { item: MessageInterface }) => (
     <View style={[styles.messageContainer, item.sender === 'user' ? styles.userMessage : styles.aiMessage]}>
-      <Text style={styles.messageText}>{item.text}</Text>
+      {item.sender === 'user' ? (
+        <>
+          <TouchableOpacity onPress={() => handlePlaySound(item.text, item.sender)} style={styles.speakerButton}>
+            <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
+          </TouchableOpacity>
+          <Text style={styles.messageTextUser}>{item.text}</Text>
+        </>
+      ) : (
+        <>
+          <Text style={styles.messageTextAI}>{item.text}</Text>
+          <TouchableOpacity onPress={() => handlePlaySound(item.text, item.sender)} style={styles.speakerButton}>
+            <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 
@@ -67,13 +109,13 @@ export default function PracticeEnglishScreen() {
               style={[styles.input, { height: Math.max(35, inputHeight) }]}
               value={inputText}
               onChangeText={setInputText}
-              placeholder="Type your message..."
+              placeholder="Type English here..."
               placeholderTextColor={Colors.light.text + '80'}
               multiline
               onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
             />
             <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-              <IconSymbol name="arrow.up.circle.fill" size={24} color={Colors.light.tint} />
+              {isTranslating ? <ActivityIndicator/> : <IconSymbol name="arrow.up.circle.fill" color={Colors.light.tint} size={24} />}
             </TouchableOpacity>
           </View>
         </View>
@@ -98,6 +140,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   messageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     borderRadius: 10,
     marginBottom: 8,
@@ -105,16 +149,22 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: Colors.light.tint,
+    backgroundColor: '#ADD8E6',
+    justifyContent: 'flex-end',
   },
   aiMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: Colors.light.secondaryBackground,
+    backgroundColor: '#ECECEC',
+    justifyContent: 'flex-start',
   },
-  messageText: {
-    color: Colors.light.text,
+  messageTextUser: {
+    color: '#000',
+    marginLeft: 10,
   },
-
+  messageTextAI: {
+    color: '#000',
+    marginRight: 10,
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -122,7 +172,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 15,
     paddingVertical: 5,
-    marginBottom:10
+    marginBottom: 10,
   },
   input: {
     flex: 1,
@@ -130,8 +180,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 16,
     minHeight: 35,
-    maxHeight: 120, // Limit the maximum height of the input field
-    paddingTop: 8, // Adjust padding to prevent text from being cut off
+    maxHeight: 120, 
+    paddingTop: 8, 
     paddingBottom: 8,
   },
   sendButton: {
@@ -139,5 +189,9 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
+  },
+  speakerButton: {
+    backgroundColor: 'transparent',
+    padding: 5,
   },
 });

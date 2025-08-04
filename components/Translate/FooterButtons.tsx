@@ -21,7 +21,7 @@ const FooterButtons: React.FC<FooterButtonsProps> = ({
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.footerButton}
-        onPress={() => router.push('/(tabs)/translate')}
+        onPress={() => router.replace('/(tabs)/translate')}
       >
         <Text style={styles.footerButtonText}>Upload New</Text>
       </TouchableOpacity>
