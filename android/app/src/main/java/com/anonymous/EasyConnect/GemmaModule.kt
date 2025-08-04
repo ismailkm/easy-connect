@@ -28,6 +28,9 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import android.net.Uri
 
+import android.speech.tts.UtteranceProgressListener
+import com.facebook.react.modules.core.DeviceEventManagerModule
+
 class GemmaModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     override fun getName() = "GemmaModule"
@@ -43,12 +46,38 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
     init {
         textToSpeech = TextToSpeech(reactContext) {
             if (it == TextToSpeech.SUCCESS) {
-                textToSpeech?.language = Locale.US
+                textToSpeech?.language = Locale.UK
+                Log.d("GemmaModule", "TextToSpeech initialized successfully")
+                // Set up the listener that will send events back to React Native.
+                textToSpeech?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                    override fun onStart(utteranceId: String) {
+                        // We can send an event when speech starts
+                        sendTtsEvent("tts-start", utteranceId)
+                    }
+
+                    override fun onDone(utteranceId: String) {
+                        // THIS IS THE EVENT WE NEED: Speech is finished.
+                        sendTtsEvent("tts-finish", utteranceId)
+                    }
+
+                    override fun onError(utteranceId: String) {
+                        // We can also send an event on error
+                        sendTtsEvent("tts-error", utteranceId)
+                    }
+                })
             } else {
+                textToSpeech = null
                 Log.e("GemmaModule", "TextToSpeech initialization failed")
             }
         }
     }
+
+    private fun sendTtsEvent(eventName: String, utteranceId: String) {
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit(eventName, utteranceId)
+    }
+
 
     @ReactMethod
     fun loadModel(promise: Promise) {
@@ -160,7 +189,7 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
     }
 
     @ReactMethod
-    fun speak(text: String, languageCode: String, promise: Promise) {
+    fun speak(text: String, languageCode: String, utteranceId: String,promise: Promise) {
         if (textToSpeech == null) {
             Log.e("GemmaModule", "TextToSpeech not initialized.")
             promise.reject("TTS_ERROR", "TextToSpeech not initialized.")
@@ -181,7 +210,7 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
             return
         }
 
-        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utteranceId")
+        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
         promise.resolve(true)
     }
 
@@ -228,6 +257,17 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
             }
     }
 
+    @ReactMethod
+    fun stopSpeaking(promise: Promise) {
+        if (textToSpeech != null) {
+            textToSpeech!!.stop()
+            Log.d("GemmaModule", "TTS playback stopped by user.")
+            promise.resolve(true)
+        } else {
+            // If TTS isn't ready, there's nothing to stop.
+            promise.resolve(false)
+        }
+    }
 
     override fun onCatalystInstanceDestroy() {
 

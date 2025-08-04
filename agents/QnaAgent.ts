@@ -13,7 +13,7 @@ const buildRagPrompt = (context: string, question: string): string => {
 
 وظیفه: تنها بر اساس زمینه ارائه شده، به سوال به صورت مفید، دوستانه و واضح به زبان دری پاسخ دهید. پاسخ خود را در یک پاراگراف کوتاه خلاصه کنید.
 `;
- console.log({promptInDari})
+
   return promptInDari;
 };
 
@@ -30,7 +30,6 @@ const buildGeneralHelpPrompt = (question: string): string => {
 };
 
 
-// It now receives the 'bestTopic' from the UI component.
 export const getAnswer = async (
   question: string,
   bestTopic: KnowledgebaseTopic | null, 
@@ -49,13 +48,11 @@ export const getAnswer = async (
     console.log("Agent: No topic found. Building General Help prompt.");
     prompt = buildGeneralHelpPrompt(question);
   }
-  
-  // --- Call the Gemma model with whichever prompt was built ---
+
   return await GemmaModule.generateResponse(prompt);
 };
 
 
-// We export the agent as a single object with its public methods.
 export const QnaAgent = {
   getAnswer,
 };

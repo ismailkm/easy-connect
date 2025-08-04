@@ -2,24 +2,16 @@ import { QnaAgent } from '@/agents/QnaAgent';
 import { DashboardButton } from '@/components/DashboardButton';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 import { Text, View } from '@/components/Themed';
-import { useGemma } from '@/context/GemmaProvider';
+import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { TextSegment } from '@/types/KnowledgebaseInterface';
 import { KnowledgebaseHelper } from '@/utils/KnowledgebaseHelper';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput } from 'react-native';
 
 export default function PracticeEnglishScreen() {
-  const { speak } = useGemma();
-
-  const handlePlaySound = async (text: string) => {
-    try {
-      const cleanTextForSpeech = text.replace(/\*/g, '');
-      await speak(cleanTextForSpeech, 'fa-ir'); // Assuming the answer is in English
-    } catch (e) {
-      console.error('Failed to play sound:', e);
-    }
-  };
+  
+  const playId = String(Date.now());
+  
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [answerSegments, setAnswerSegments] = useState<TextSegment[]>([]);
@@ -32,8 +24,6 @@ export default function PracticeEnglishScreen() {
         let bestTopic = await KnowledgebaseHelper.findBestTopic(question);
         const finalAnswer = await QnaAgent.getAnswer(question, bestTopic, 'dari');
         const answerSegments = KnowledgebaseHelper.parseBoldMarkdown(finalAnswer);
-        console.log({answerSegments})
-        console.log({finalAnswer})
         setAnswer(finalAnswer);
         setAnswerSegments(answerSegments);
     } catch (error) {
@@ -75,9 +65,11 @@ export default function PracticeEnglishScreen() {
         {!isLoading && answer && (
           <ScrollView contentContainerStyle={styles.answerCard}>
             <View style={styles.answerContentContainer}>
-              <TouchableOpacity onPress={() => handlePlaySound(answer)} style={styles.speakerButton}>
-                <FontAwesome name="volume-up" size={24} color="black" />
-              </TouchableOpacity>
+              <SoundPlayer
+                text={answer}
+                languageCode={'fa-ir'}
+                messageId={playId}
+              />
               <MarkdownRenderer segments={answerSegments} baseStyle={styles.answerText} />
             </View>
           </ScrollView>

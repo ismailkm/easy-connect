@@ -48,8 +48,7 @@ const findBestTopic = async (query: string): Promise<KnowledgebaseTopic | null> 
         topic.title_native.toLowerCase().includes(query.toLowerCase())) {
       currentScore += 5; // A significant boost for a direct title match
     }
-    console.log({'topic_found': topic})
-    console.log({currentScore})
+
     if (currentScore > highestScore) {
       highestScore = currentScore;
       bestMatch = topic;

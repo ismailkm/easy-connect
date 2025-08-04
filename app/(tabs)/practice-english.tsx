@@ -1,9 +1,9 @@
 import { Text, View } from '@/components/Themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { Colors } from '@/constants/Colors';
 import { useGemma } from '@/context/GemmaProvider';
 import { MessageInterface } from '@/types/MessageInterface';
-import { FontAwesome } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,14 +11,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function PracticeEnglishScreen() {
   const flatListRef = useRef<FlatList>(null);
   const [messages, setMessages] = useState<MessageInterface[]>([
-
-    { id: '1', text: 'Hello! How can I help you practice English today?', sender: 'ai' },
+    { id: '1', text: 'Hello! How can I help you practice English today?', sender: 'ai', languageCode: 'en' },
   ]);
   const [inputText, setInputText] = useState('');
   const [inputHeight, setInputHeight] = useState(35);
-  const { translateBatch, speak } = useGemma();
+  const { translateBatch } = useGemma();
   const [isTranslating, setIsTranslating] = useState(false);
-
+  
   const handleSendMessage = async () => {
     const textToTranslate = inputText.trim();
     if (!textToTranslate || isTranslating) return;
@@ -28,13 +27,12 @@ export default function PracticeEnglishScreen() {
       id: String(Date.now()),
       text: textToTranslate,
       sender: 'user',
+      languageCode: 'en'
     };
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setInputHeight(35);
-    
     setIsTranslating(true);
-
     try {
       const resultArray = await translateBatch([textToTranslate], 'dari');
       
@@ -47,15 +45,16 @@ export default function PracticeEnglishScreen() {
         id: String(Date.now() + 1),
         text: translatedText,
         sender: 'ai',
+        languageCode: 'fa-ir'
       };
       setMessages((prevMessages) => [...prevMessages, translatedMessage]);
 
     } catch (e: any) {
-      console.error("Translation error in chat:", e);
       const errorMessage: MessageInterface = {
         id: String(Date.now() + 1),
         text: "Sorry, an error occurred during translation.",
         sender: 'ai',
+        languageCode: 'fa-ir'
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
@@ -63,26 +62,25 @@ export default function PracticeEnglishScreen() {
     }
   };
 
-  const handlePlaySound = (text: string, sender: 'user' | 'ai') => {
-    let langCode:LanguageCode = (sender === 'user') ? 'en' : 'fa-ir';
-    speak(text, langCode);
-  };
-
   const renderMessage = ({ item }: { item: MessageInterface }) => (
     <View style={[styles.messageContainer, item.sender === 'user' ? styles.userMessage : styles.aiMessage]}>
       {item.sender === 'user' ? (
         <>
-          <TouchableOpacity onPress={() => handlePlaySound(item.text, item.sender)} style={styles.speakerButton}>
-            <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
-          </TouchableOpacity>
+          <SoundPlayer
+            text={item.text}
+            languageCode={item.languageCode}
+            messageId={item.id}
+          />
           <Text style={styles.messageTextUser}>{item.text}</Text>
         </>
       ) : (
         <>
           <Text style={styles.messageTextAI}>{item.text}</Text>
-          <TouchableOpacity onPress={() => handlePlaySound(item.text, item.sender)} style={styles.speakerButton}>
-            <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
-          </TouchableOpacity>
+          <SoundPlayer
+            text={item.text}
+            languageCode={item.languageCode}
+            messageId={item.id}
+          />
         </>
       )}
     </View>

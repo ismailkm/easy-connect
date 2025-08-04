@@ -1,7 +1,8 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { AppState, NativeModules } from 'react-native';
+import { AppState, NativeEventEmitter, NativeModules } from 'react-native';
 
 const { GemmaModule } = NativeModules;
+const gemmaModuleEmitter = new NativeEventEmitter(GemmaModule);
 
 interface GemmaContextType {
   isModelLoaded: boolean;
@@ -9,8 +10,11 @@ interface GemmaContextType {
   error: string | null;
   generateResponse: (prompt: string) => Promise<string>;
   translateBatch: (lines: string[], targetLang: 'pashto' | 'dari') => Promise<string[]>;
-  speak: (text: string, langCode: LanguageCode) => Promise<void>;
+  speak: (text: string, langCode: LanguageCode, utteranceId: string) => Promise<void>;
   recognizeText: (imageUri: string) => Promise<string[]>;
+  stopSpeaking: () => Promise<void>;
+  speakingUtteranceId: string | null;
+  isSpeaking: boolean;
 }
 
 const GemmaContext = createContext<GemmaContextType | undefined>(undefined);
@@ -23,6 +27,7 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModelLoaded, setIsModelLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [speakingUtteranceId, setSpeakingUtteranceId] = useState<string | null>(null);
 
   useEffect(() => {
     // This function will contain the model loading logic
@@ -72,6 +77,27 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     };
   }, []); 
 
+  // --- This useEffect sets up the listeners ---
+  useEffect(() => {
+    const onTtsFinish = (utteranceId: string) => {
+      // console.log('TTS finished for:', utteranceId);
+      setSpeakingUtteranceId(currentId => (currentId === utteranceId ? null : currentId));
+    };
+    const onTtsError = (utteranceId: string) => {
+      // console.error('TTS error for:', utteranceId);
+      setSpeakingUtteranceId(currentId => (currentId === utteranceId ? null : currentId));
+    };
+
+    // Subscribe to the native events
+    const finishSubscription = gemmaModuleEmitter.addListener('tts-finish', onTtsFinish);
+    const errorSubscription = gemmaModuleEmitter.addListener('tts-error', onTtsError);
+
+    // Return a cleanup function to unsubscribe
+    return () => {
+      finishSubscription.remove();
+      errorSubscription.remove();
+    };
+  }, []);
 
   const generateResponse = async (prompt: string): Promise<string> => {
     if (!isModelLoaded) {
@@ -96,14 +122,33 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     return await GemmaModule.translateBatch(lines, targetLang);
   };
 
-  const speak = async (text: string, langCode: LanguageCode): Promise<void> => {
-    if (!GemmaModule?.speak) {
-      throw new Error('The native speak function is not available.');
-    }
+  const speak = async (text: string, langCode: LanguageCode, utteranceId: string) => {
     try {
-      await GemmaModule.speak(text, langCode);
-    } catch (e: any) {
-      console.error("TTS Error:", e.message);
+      // 1. First, stop any speech that is currently playing.
+      // This ensures we don't have overlapping sounds.
+      await GemmaModule.stopSpeaking();
+      
+      // 2. IMMEDIATELY set the state. This is the crucial change.
+      // The UI will now re-render instantly and show the 'stop-circle' icon.
+      setSpeakingUtteranceId(utteranceId);
+      
+      // 3. Then, tell the native module to start speaking with the new ID.
+      await GemmaModule.speak(text, langCode, utteranceId);
+    } catch (e) {
+      console.error("Speak Error:", e);
+      // If speaking fails, clear the state.
+      setSpeakingUtteranceId(null);
+    }
+  };
+
+  const stopSpeaking = async () => {
+    try {
+      await GemmaModule.stopSpeaking();
+      // When we manually stop, we also must manually clear the state.
+      setSpeakingUtteranceId(null);
+    } catch (e) {
+      console.error("Stop Speaking Error:", e);
+      setSpeakingUtteranceId(null);
     }
   };
 
@@ -123,6 +168,9 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     translateBatch,
     speak,
     recognizeText,
+    stopSpeaking,
+    isSpeaking: speakingUtteranceId !== null, // A simple boolean for the UI
+    speakingUtteranceId, // The specific ID, for more complex UI
   };
 
   return <GemmaContext.Provider value={value}>{children}</GemmaContext.Provider>;

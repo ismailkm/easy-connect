@@ -1,24 +1,14 @@
-import { useGemma } from '@/context/GemmaProvider';
+import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { LearningLine } from '@/types/RoadmapInterface';
-import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface LessonComponentProps {
   material: LearningLine;
+  id: number;
 }
 
-export const LessonComponent: React.FC<LessonComponentProps> = ({ material }) => {
-  const { speak } = useGemma();
-
-  const handlePlaySound = async (text: string, language: string) => {
-    try {
-      const langCode: LanguageCode = ( language === 'en' ) ? 'en' : 'fa-ir';
-      await speak(text, langCode);
-    } catch (e) {
-      console.error('Failed to play sound:', e);
-    }
-  };
+export const LessonComponent: React.FC<LessonComponentProps> = ({ material, id  }) => {
 
   return (
     <View style={styles.card}>
@@ -28,23 +18,21 @@ export const LessonComponent: React.FC<LessonComponentProps> = ({ material }) =>
             {/* English Word and Speaker */}
             <View style={styles.languageContainer}>
               <Text style={styles.vocabText}>{material.en}</Text>
-              <TouchableOpacity
-                onPress={() => handlePlaySound(material.en, 'en')}
-                style={styles.speakerButton}
-              >
-                <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
-              </TouchableOpacity>
+              <SoundPlayer
+                text={material.en}
+                languageCode={'en'}
+                messageId={id+"en"}
+              />
             </View>
 
             {/* Pashto/Dari Word and Speaker */}
             <View style={styles.languageContainer}>
               <Text style={[styles.vocabText, styles.nativeText]}>{material.native}</Text>
-              <TouchableOpacity
-                onPress={() => handlePlaySound(material.native, 'native')}
-                style={styles.speakerButton}
-              >
-                <FontAwesome name="volume-up" size={22} color="#4A4A4A" />
-              </TouchableOpacity>
+              <SoundPlayer
+                text={material.native}
+                languageCode={'fa-ir'}
+                messageId={id+"fa"}
+              />
             </View>
           </View>
         

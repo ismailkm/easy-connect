@@ -46,7 +46,6 @@ export default function LessonScreen() {
       if (stage.learningMaterials && stage.learningMaterials.length > 0) {
         setLearningMaterials(stage.learningMaterials);
       } else {
-        console.log("asfda here")
         setLoadingMessage("Generating new lessons for you. Please wait.")
         const lessonsLines: LearningLine[] = await LessonContentGeneratorAgent.generateLessonContent(generateResponse, translateBatch, stage.title, stage.goal, userData);
         await RoadmapModel.saveLearningMaterialsToStage(id as string, lessonsLines);
@@ -79,8 +78,9 @@ export default function LessonScreen() {
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
                     
           {learningMaterials?.map((material, index) => {
-            return <LessonComponent key={index} material={material} />;
+            return <LessonComponent key={index} id={index} material={material} />;
           })}
+          
           <View style={{marginTop: 20}}>
             <FormButton title="Start Quiz" onPress={() => router.push(`/quiz/${id}`)} />
           </View>

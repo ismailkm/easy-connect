@@ -2,14 +2,14 @@ import { SummaryAgent } from '@/agents/SummaryAgent';
 import FooterButtons from '@/components/Translate/FooterButtons';
 import ImageModal from '@/components/Translate/ImageModal';
 import { TranslationLine } from '@/components/Translate/TranslationLine';
+import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { useGemma } from '@/context/GemmaProvider';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function PreviewTranslateScreen() {  
-  const { recognizeText, translateBatch, speak  } = useGemma();
+  const { recognizeText, translateBatch  } = useGemma();
   const { photoUri } = useLocalSearchParams<{ photoUri: string }>();
   const [isLoadingTranslation, setIsLoadingTranslation] = useState(true);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -18,7 +18,6 @@ export default function PreviewTranslateScreen() {
   const [summary, setSummary] = useState<string>('');
 
   useEffect(() => {
-    console.log("trasnlate preview ")
     const processImage = async () => {
       if (!photoUri) return;
       try {
@@ -48,11 +47,6 @@ export default function PreviewTranslateScreen() {
   }, [photoUri]);
 
   const [imageModalVisible, setImageModalVisible] = useState(false);
-
-  const handleSpeak = async(text: string) => {
-    await speak(text, 'fa-ir');
-    console.log('Speaking:', text);
-  };
 
   return (
     <View style={styles.container}> 
@@ -84,9 +78,11 @@ export default function PreviewTranslateScreen() {
             ) : (
               <View style={styles.summaryContainer}>
                 <Text style={styles.summaryText}>{summary}</Text>
-                <TouchableOpacity onPress={() => handleSpeak(summary)}>
-                  <Ionicons name="volume-high" size={20} color="#007AFF" />
-                </TouchableOpacity>
+                <SoundPlayer
+                  text={summary}
+                  languageCode={'fa-ir'}
+                  messageId={"summary"}
+                />
               </View>
             )}
           </View>
@@ -96,8 +92,8 @@ export default function PreviewTranslateScreen() {
               <TranslationLine 
                 key={index} 
                 englishText={englishLines[index] || ''}
-                nativeText={nativeLine} 
-                onSpeak={() => handleSpeak(nativeLine)} 
+                nativeText={nativeLine}
+                id={index+"_translation"}
               />
             ))}
           </View>

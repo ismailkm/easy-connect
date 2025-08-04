@@ -1,22 +1,24 @@
-import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SoundPlayer } from '@/components/ui/SoundPlayer';
+import { StyleSheet, Text, View } from 'react-native';
 
 type TranslationLineProps = {
   englishText: string;
   nativeText: string;
-  onSpeak: () => void;
+  id: string;
 };
 
-export function TranslationLine({ englishText, nativeText, onSpeak }: TranslationLineProps) {
+export function TranslationLine({ englishText, nativeText, id }: TranslationLineProps) {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <Text style={styles.englishText}>{englishText}</Text>
         <Text style={styles.nativeText}>{nativeText}</Text>
       </View>
-      <TouchableOpacity onPress={onSpeak} style={styles.speakButton}>
-        <Ionicons name="volume-high" size={24} color="#007AFF" />
-      </TouchableOpacity>
+      <SoundPlayer
+        text={nativeText}
+        languageCode={'fa-ir'}
+        messageId={id}
+      />
     </View>
   );
 }

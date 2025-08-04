@@ -2,7 +2,7 @@ import { GemmaProvider, useGemma } from '@/context/GemmaProvider';
 import { StorageHelper } from '@/models/StorageHelper';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useNavigation, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import 'react-native-reanimated';
@@ -17,10 +17,19 @@ export default function RootLayout() {
 
 function AppLayout() {
   const router = useRouter();
-  const { isModelLoaded, isLoading: isGemmaLoading, error: modelError } = useGemma();
+  const navigation = useNavigation();
+  const { isModelLoaded, isLoading: isGemmaLoading, error: modelError, stopSpeaking } = useGemma();
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  useEffect(() => {
+    //to stop if any audio is playing when user navigates to a new screen.
+    const unsubscribe = navigation.addListener('state', (e) => {
+      stopSpeaking();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
