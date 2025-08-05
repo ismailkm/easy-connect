@@ -1,7 +1,9 @@
 import { DashboardButton } from '@/components/DashboardButton';
 import { Text, View } from '@/components/Themed';
+import { Colors } from '@/constants/Colors';
 import { UserModel } from '@/models/UserModel';
 import UserInterface from '@/types/UserInterface';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
@@ -31,40 +33,56 @@ const DashboardScreen = () => {
   return (
     <View style={styles.container}>
       {/* Section 1: Introduction */}
-      <View style={styles.introSection}>
+      <LinearGradient
+        colors={[Colors.light.tint, Colors.light.tint + 'B3']}
+        style={styles.introSection}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
         <View style={styles.greetingContainer}>
           <Text style={styles.greetingText}>Hello, {greetingName}!</Text>
           <Text style={styles.subtitle}>Your personalized guide to UK life.</Text>
           <Text style={styles.welcomeMessage}>Connect, learn, and thrive with EasyConnect.</Text>
         </View>
-        
         <View style={styles.offlineIndicator}>
           <View style={styles.offlineCircle} />
           <Text style={styles.offlineText}>Offline Ready</Text>
         </View>
-      </View>
+      </LinearGradient>
+
 
       {/* Section 2: Buttons */}
-      <View style={styles.buttonSection}>
+      <LinearGradient
+        colors={[Colors.light.secondaryBackground, Colors.light.secondaryBackground + 'B3']}
+        style={styles.buttonSection}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
           <DashboardButton
             iconName="text.bubble.fill"
             title="Translate"
             subtitle="From Camera or Text"
             onPress={() => router.push('/(tabs)/translate')}
+            startColor={Colors.light.translateButton}
+            endColor={Colors.light.translateButton + 'B3'}
           />
           <DashboardButton
             iconName="graduationcap.fill"
             title="Learn English"
             subtitle="Interactive Lessons"
             onPress={() => router.push('/(tabs)/learn-english')}
+            startColor={Colors.light.learnEnglishButton}
+            endColor={Colors.light.learnEnglishButton + 'B3'}
           />
           <DashboardButton
             iconName="questionmark.circle.fill"
             title="Ask About UK Life"
             subtitle="Get Help & Information"
             onPress={() => router.push('/(tabs)/ask-about-uk-life')}
+            startColor={Colors.light.askUkLifeButton}
+            endColor={Colors.light.askUkLifeButton + 'B3'}
           />
-      </View>
+      </LinearGradient>
     </View>
   );
 };
@@ -72,85 +90,77 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.light.background,
     padding: 20,
-    paddingTop: 20,
   },
   introSection: {
-    flex: 2,
+    borderRadius: 15,
+    padding: 25,
     marginBottom: 20,
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowColor: Colors.light.tint,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
   },
   buttonSection: {
-    flex: 4,
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-    marginTop: 10,
-    justifyContent: 'center',
-  },
-  greetingContainer: {
     flex: 1,
-    width: '100%',
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: Colors.light.secondaryBackground,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
+    justifyContent: 'space-around',
+  },
+
+  greetingContainer: {
     marginBottom: 20,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   greetingText: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
+    color: Colors.light.background,
     marginBottom: 20,
-  },
-  settingsIcon: {
-    padding: 5,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
   },
+
   subtitle: {
     fontSize: 18,
-    marginBottom: 5,
+    color: Colors.light.background,
+    marginBottom: 4,
     textAlign: 'center',
-    fontWeight: 'bold',
   },
+
   welcomeMessage: {
     fontSize: 16,
+    color: Colors.light.background,
     textAlign: 'center',
-    marginBottom: 20,
   },
+
   offlineIndicator: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginBottom: 10,
+    marginTop: 10,
+    backgroundColor: 'transparent',
   },
   offlineCircle: {
     width: 10,
     height: 10,
-    borderRadius: 5,
-    backgroundColor: 'green',
+    borderRadius: 10 / 2,
+    backgroundColor: Colors.light.success,
     marginRight: 5,
+    borderWidth: 1,
+    borderColor: Colors.light.background,
   },
   offlineText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 10,
-    textAlign: 'center',
-  }
+     fontSize: 14,
+     color: Colors.light.background,
+   },
 });
 
 export default DashboardScreen;

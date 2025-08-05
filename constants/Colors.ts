@@ -18,6 +18,12 @@ export const Colors = {
     secondaryBackground: '#F2F2F2',
     buttonColor: primaryButtonColor,
     buttonBorderColor: primaryButtonColor,
+    success: 'green',
+    translateButton: '#FF6B6B',
+    learnEnglishButton: '#4ECDC4',
+    askUkLifeButton: '#45B7D1',
+    practiceEnglishButton: '#FFA07A',
+    quizButton: '#98D8AA',
   },
   dark: {
     text: '#ECEDEE',
