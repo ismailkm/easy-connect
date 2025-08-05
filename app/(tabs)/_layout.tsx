@@ -15,7 +15,7 @@ export default function TabLayout() {
         headerTitle: 'Easy Connect',
         headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
         headerRight: () => (
-          <TouchableOpacity onPress={() => router.push('/(tabs)/settings')}>
+          <TouchableOpacity onPress={() => router.push('/settings')}>
             <IconSymbol size={28} name="gearshape.fill" color="#007AFF" style={{ marginRight: 15 }} />
           </TouchableOpacity>
         ),

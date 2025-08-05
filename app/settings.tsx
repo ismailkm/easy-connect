@@ -1,5 +1,4 @@
-import { Text, View } from '@/components/Themed';
-import FormButton from '@/components/ui/FormButton';
+import { View } from '@/components/Themed';
 import UserForm from '@/components/UserForm';
 import { StorageHelper } from '@/models/StorageHelper';
 import { UserModel } from '@/models/UserModel';
@@ -50,7 +49,6 @@ const SettingsScreen = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContentContainer}>
         <View style={styles.innerContainer}>
-          <Text style={styles.title}>Settings</Text>
           {initialUserData && (
             <UserForm
               initialUserData={initialUserData}
@@ -58,8 +56,6 @@ const SettingsScreen = () => {
               buttonTitle="Save Settings"
             />
           )}
-
-          <FormButton title="Logout" onPress={handleLogout} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -75,7 +71,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 10,
   },
   innerContainer: {
     width: '100%',
@@ -83,6 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   title: {
+    lineHeight: 35,
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 40,

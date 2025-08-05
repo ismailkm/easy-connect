@@ -22,15 +22,15 @@ const WelcomeScreen = () => {
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={90}
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <View style={styles.logoContainer}>
-            <MaterialIcons name="group-add" size={80} color="#007AFF" />
+            <MaterialIcons name="group-add" size={80} color="#4A90E2" />
           </View>
-          <Text style={styles.welcomeText}>Welcome to Easy Connect</Text>
+          <Text style={styles.welcomeText}>Welcome to EasyConnect</Text>
+          <Text style={styles.subText}>Let's get you set up</Text>
           
-          <UserForm onSave={handleSave} buttonTitle="Get Started" />
+          <UserForm onSave={handleSave} buttonTitle="Continue" />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -40,15 +40,14 @@ const WelcomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F0F4F8',
   },
   keyboardAvoidingContainer: {
     flex: 1,
   },
   scrollViewContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 5,
     paddingTop: 30,
   },
   logoContainer: {
@@ -56,10 +55,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   welcomeText: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
+    color: '#4A90E2', // A vibrant blue
+    marginBottom: 10,
+  },
+  subText: {
+    fontSize: 16,
+    color: '#333333',
+    textAlign: 'center',
+    marginBottom: 30,
   },
 });
 

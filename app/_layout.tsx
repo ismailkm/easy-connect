@@ -1,8 +1,9 @@
 import { GemmaLoader } from '@/components/GemmaLoader';
 import { Text, View } from '@/components/Themed';
+import { Colors } from '@/constants/Colors';
 import { GemmaProvider } from '@/context/GemmaProvider';
 import { MlKitProvider } from '@/context/MlKitProvider';
-import { VoiceProvider, useVoice } from '@/context/VoiceProvider'; // Import the new provider and hook
+import { VoiceProvider, useVoice } from '@/context/VoiceProvider';
 import { StorageHelper } from '@/models/StorageHelper';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
@@ -72,6 +73,11 @@ function AppLayout() {
     );
   }
 
+  const handleLogout = async () => {
+    await StorageHelper.clearAllStorage();
+    router.replace('/welcome');
+  };
+
   return (
     <>
       <GemmaLoader />
@@ -82,6 +88,19 @@ function AppLayout() {
         <Stack.Screen name="lesson" />
         <Stack.Screen name="quiz" />
         <Stack.Screen name="create-roadmap" options={{ headerShown: true, title: 'Create New Roadmap' }}/>
+        <Stack.Screen name="settings" 
+          options={({ navigation }) => ({
+              title: 'Settings',
+              headerShown: true,
+              headerRight: () => {
+                return (
+                  <TouchableOpacity onPress={handleLogout}>
+                    <Ionicons name="exit-outline" size={24} color={Colors.light.buttonColor} />
+                  </TouchableOpacity>
+                );
+              },
+          })}
+        />
         <Stack.Screen name="translate" />
         <Stack.Screen name="preview-translate" 
           options={({ navigation }) => ({

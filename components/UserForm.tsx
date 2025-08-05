@@ -1,12 +1,11 @@
 import { Text, View } from '@/components/Themed';
-import FormButton from '@/components/ui/FormButton';
-import SelectionButton from '@/components/ui/SelectionButton';
+import { Colors } from '@/constants/Colors';
 import { ENGLISH_LEVELS } from '@/constants/EnglishLevels';
 import { GENDERS } from '@/constants/Genders';
 import { LANGUAGES } from '@/constants/Languages';
 import UserInterface from '@/types/UserInterface';
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, TextInput } from 'react-native';
+import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 interface UserFormProps {
   initialUserData?: UserInterface;
@@ -68,68 +67,63 @@ const UserForm: React.FC<UserFormProps> = ({
     });
   };
 
+  const renderSelectionButtons = (options: { label: string; value: string }[], selectedValue: string, onSelect: (value: string) => void) => (
+    <View style={styles.buttonsContainer}>
+      {options.map((option) => (
+        <TouchableOpacity
+          key={option.value}
+          style={[styles.selectionButton, selectedValue === option.value && styles.selectedButton]}
+          onPress={() => onSelect(option.value)}
+        >
+          <Text style={[styles.selectionButtonText, selectedValue === option.value && styles.selectedButtonText]}>
+            {option.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
+      <View style={styles.card}>
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          placeholderTextColor="#888"
+          value={firstName}
+          onChangeText={setFirstName}
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Age"
-        value={age}
-        onChangeText={setAge}
-        keyboardType="numeric"
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Age"
+          placeholderTextColor="#888"
+          value={age}
+          onChangeText={setAge}
+          keyboardType="numeric"
+        />
 
-      <Text style={styles.label}>Gender</Text>
-      <View style={styles.buttonsContainer}>
-        {GENDERS.map((gen) => (
-          <SelectionButton
-            key={gen.value}
-            title={gen.label}
-            onPress={() => setGender(gen.value)}
-            isSelected={gender === gen.value}
-          />
-        ))}
+        <Text style={styles.label}>Gender</Text>
+        {renderSelectionButtons(GENDERS, gender, setGender as (value: string) => void)}
+
+        <Text style={styles.label}>Native Language</Text>
+        {renderSelectionButtons(LANGUAGES, nativeLanguage, setNativeLanguage as (value: string) => void)}
+
+        <Text style={styles.label}>English Level</Text>
+        {renderSelectionButtons(ENGLISH_LEVELS, englishLevel, setEnglishLevel as (value: string) => void)}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Profession"
+          placeholderTextColor="#888"
+          value={profession}
+          onChangeText={setProfession}
+        />
+
+        <TouchableOpacity style={styles.submitButton} onPress={handleSave}>
+          <Text style={styles.submitButtonText}>{buttonTitle}</Text>
+        </TouchableOpacity>
       </View>
-
-      <Text style={styles.label}>Native Language</Text>
-      <View style={styles.buttonsContainer}>
-        {LANGUAGES.map((lang) => (
-          <SelectionButton
-            key={lang.value}
-            title={lang.label}
-            onPress={() => setNativeLanguage(lang.value as Language)}
-            isSelected={nativeLanguage === lang.value}
-          />
-        ))}
-      </View>
-
-      <Text style={styles.label}>English Level</Text>
-      <View style={styles.buttonsContainer}>
-          {ENGLISH_LEVELS.map((level) => (
-            <SelectionButton
-              key={level.value}
-              title={level.label}
-              onPress={() => setEnglishLevel(level.value as EnglishLevel)}
-              isSelected={englishLevel === level.value}
-            />
-          ))}
-      </View>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Profession"
-        value={profession}
-        onChangeText={setProfession}
-      />
-
-      <FormButton title={buttonTitle} onPress={handleSave} />
     </View>
   );
 };
@@ -137,38 +131,84 @@ const UserForm: React.FC<UserFormProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#F0F4F8',
     width: '100%',
+    padding: 15,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 3,
   },
   input: {
     width: '100%',
     height: 50,
-    borderColor: '#E0E0E0',
-    borderWidth: 1,
+    backgroundColor: '#F8F8F8',
     borderRadius: 10,
     paddingHorizontal: 15,
-    marginBottom: 30,
-    backgroundColor: '#FFFFFF',
-    fontSize: 18,
+    marginBottom: 20,
+    fontSize: 16,
+    color: '#333333',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    alignSelf: 'flex-start',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#555555',
     marginBottom: 10,
     marginTop: 10,
   },
   buttonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: 30,
-    backgroundColor: 'transparent'
+    flexWrap: 'wrap',
+    marginBottom: 15,
   },
-
+  selectionButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    marginBottom: 10,
+    backgroundColor: '#F8F8F8',
+    marginRight: 6,
+  },
+  selectedButton: {
+    backgroundColor: Colors.light.buttonColor, // A vibrant blue
+    borderColor: Colors.light.buttonColor,
+  },
+  selectionButtonText: {
+    color: '#555555',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  selectedButtonText: {
+    color: '#FFFFFF',
+  },
+  submitButton: {
+    backgroundColor: Colors.light.buttonColor,
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    shadowColor: Colors.light.buttonColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  submitButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
 
 export default UserForm;
