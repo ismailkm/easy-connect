@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -11,8 +11,7 @@ export default function ImagePickerExample() {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images', 'videos'],
-      allowsEditing: false,
-      aspect: [4, 3],
+      allowsEditing: true,
       quality: 1,
     });
 

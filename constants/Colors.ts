@@ -32,6 +32,7 @@ export const Colors = {
     aiMessageText: '#000000',
     inputBackground: '#F0F0F0',
     border: '#E0E0E0',
+    darkShadowColor: '#000000',
   },
   dark: {
     text: '#FFFFFF',

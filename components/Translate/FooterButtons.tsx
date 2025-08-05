@@ -1,16 +1,17 @@
-import { useRouter } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface FooterButtonsProps {
   onViewDocument: () => void;
+  onNewDocument: () => void;
 }
 
 const FooterButtons: React.FC<FooterButtonsProps> = ({
-  onViewDocument
+  onViewDocument,
+  onNewDocument
 }) => {
-  const router = useRouter();
-
+  
   return (
     <View style={styles.footer}>
       <TouchableOpacity 
@@ -21,7 +22,7 @@ const FooterButtons: React.FC<FooterButtonsProps> = ({
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.footerButton}
-        onPress={() => router.replace('/(tabs)/translate')}
+        onPress={onNewDocument}
       >
         <Text style={styles.footerButtonText}>Upload New</Text>
       </TouchableOpacity>
@@ -44,9 +45,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   footerButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.light.buttonColor,
+    alignItems: 'center',
+    shadowColor: Colors.light.buttonColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
+    paddingVertical: 14,
+    paddingHorizontal: 30,
     borderRadius: 8,
   },
   footerButtonText: {
