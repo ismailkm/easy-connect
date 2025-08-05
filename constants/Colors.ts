@@ -10,6 +10,7 @@ const primaryButtonColor = '#4A90E2';
 export const Colors = {
   light: {
     text: '#11181C',
+    textWhite: 'white',
     background: '#fff',
     tint: tintColorLight,
     icon: '#687076',
@@ -23,10 +24,12 @@ export const Colors = {
     learnEnglishButton: '#4ECDC4',
     askUkLifeButton: '#45B7D1',
     practiceEnglishButton: '#FFA07A',
+    uploadImageButton: '#45B7D8',
     quizButton: '#98D8AA',
   },
   dark: {
     text: '#ECEDEE',
+    textWhite: 'white',
     background: '#151718',
     tint: tintColorDark,
     icon: '#9BA1A6',

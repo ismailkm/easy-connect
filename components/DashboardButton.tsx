@@ -67,12 +67,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   buttonTitle: {
-    color: Colors.light.background,
+    color: Colors.light.textWhite,
     fontSize: 18,
     fontWeight: '600',
   },
   buttonSubtitle: {
-    color: Colors.light.background,
+    color: Colors.light.textWhite,
     fontSize: 12,
     marginTop: 2,
     fontWeight: '600'

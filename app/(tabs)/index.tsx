@@ -52,11 +52,8 @@ const DashboardScreen = () => {
 
 
       {/* Section 2: Buttons */}
-      <LinearGradient
-        colors={[Colors.light.secondaryBackground, Colors.light.secondaryBackground + 'B3']}
+      <View
         style={styles.buttonSection}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
       >
           <DashboardButton
             iconName="text.bubble.fill"
@@ -82,7 +79,7 @@ const DashboardScreen = () => {
             startColor={Colors.light.askUkLifeButton}
             endColor={Colors.light.askUkLifeButton + 'B3'}
           />
-      </LinearGradient>
+      </View>
     </View>
   );
 };
@@ -106,13 +103,7 @@ const styles = StyleSheet.create({
   buttonSection: {
     flex: 1,
     borderRadius: 15,
-    padding: 20,
-    shadowColor: Colors.light.secondaryBackground,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 10,
-    justifyContent: 'space-around',
+    marginTop: 20
   },
 
   greetingContainer: {
@@ -123,21 +114,21 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: Colors.light.background,
+    color: Colors.light.textWhite,
     marginBottom: 20,
     textAlign: 'center',
   },
 
   subtitle: {
     fontSize: 18,
-    color: Colors.light.background,
+    color: Colors.light.textWhite,
     marginBottom: 4,
     textAlign: 'center',
   },
 
   welcomeMessage: {
     fontSize: 16,
-    color: Colors.light.background,
+    color: Colors.light.textWhite,
     textAlign: 'center',
   },
 
@@ -159,7 +150,7 @@ const styles = StyleSheet.create({
   },
   offlineText: {
      fontSize: 14,
-     color: Colors.light.background,
+     color: Colors.light.textWhite,
    },
 });
 
