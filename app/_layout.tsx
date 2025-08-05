@@ -1,35 +1,49 @@
-import { GemmaProvider, useGemma } from '@/context/GemmaProvider';
+import { GemmaLoader } from '@/components/GemmaLoader';
+import { Text, View } from '@/components/Themed';
+import { GemmaProvider } from '@/context/GemmaProvider';
+import { MlKitProvider } from '@/context/MlKitProvider';
+import { VoiceProvider, useVoice } from '@/context/VoiceProvider'; // Import the new provider and hook
 import { StorageHelper } from '@/models/StorageHelper';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigation, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+
 import 'react-native-reanimated';
 
 export default function RootLayout() {
   return (
     <GemmaProvider>
-      <AppLayout />
+      <MlKitProvider>
+        <VoiceProvider>
+          <AppLayout />
+        </VoiceProvider>
+      </MlKitProvider>
     </GemmaProvider>
   );
 }
 
+
 function AppLayout() {
   const router = useRouter();
   const navigation = useNavigation();
-  const { isModelLoaded, isLoading: isGemmaLoading, error: modelError, stopSpeaking } = useGemma();
+  
+  const { stopSpeaking, isSpeaking } = useVoice();
+  
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
-    //to stop if any audio is playing when user navigates to a new screen.
-    const unsubscribe = navigation.addListener('state', (e) => {
-      stopSpeaking();
+    const unsubscribe = navigation.addListener('state', () => {
+      if (isSpeaking) {
+        console.log('Screen lost focus, stopping active speech.');
+        stopSpeaking();
+      }
     });
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, isSpeaking, stopSpeaking]);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -44,53 +58,48 @@ function AppLayout() {
         router.replace('/welcome');
       }
     };
-    if (fontsLoaded && isModelLoaded) {
+    if (fontsLoaded) {
       checkOnboardingStatus();
     }
-  }, [fontsLoaded, isModelLoaded]); 
+  }, [fontsLoaded]); 
 
-  const isAppLoading = !fontsLoaded || isGemmaLoading;
-
-  if (isAppLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 10 }}>Preparing Easy Connect...</Text>
-      </View>
-    );
-  }
   
-  if (modelError || fontError) {
+  if (fontError) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Error starting app: {modelError || fontError?.message}</Text>
+        <Text>Error starting app: {fontError?.message}</Text>
       </View>
     );
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="welcome" />
-      <Stack.Screen name="roadmap" />
-      <Stack.Screen name="lesson" />
-      <Stack.Screen name="quiz" />
-      <Stack.Screen name="create-roadmap" options={{ headerShown: true, title: 'Create New Roadmap' }}/>
-      <Stack.Screen name="translate" />
-      <Stack.Screen name="preview-translate" 
-        options={({ navigation }) => ({
-          title: 'Preview & Translate',
-          headerShown: true,
-          headerLeft: () => {
-            const router = useRouter();
-            return (
-              <TouchableOpacity onPress={() => router.replace('/(tabs)/translate')}>
-                <Ionicons name="arrow-back" size={24} color="black" />
-              </TouchableOpacity>
-            );
-          },
-      })}/>
-      <Stack.Screen name="+not-found" />
-    </Stack>
+    <>
+      <GemmaLoader />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="welcome" />
+        <Stack.Screen name="roadmap" />
+        <Stack.Screen name="lesson" />
+        <Stack.Screen name="quiz" />
+        <Stack.Screen name="create-roadmap" options={{ headerShown: true, title: 'Create New Roadmap' }}/>
+        <Stack.Screen name="translate" />
+        <Stack.Screen name="preview-translate" 
+          options={({ navigation }) => ({
+            title: 'Preview & Translate',
+            headerShown: true,
+            headerLeft: () => {
+              return (
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/translate')}>
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+              );
+            },
+        })}/>
+        <Stack.Screen name="+not-found" />
+      </Stack>
+    </>
+    
   );
 }
+
+

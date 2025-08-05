@@ -2,6 +2,7 @@ import { LessonContentGeneratorAgent } from '@/agents/LessonContentGeneratorAgen
 import { LessonComponent } from '@/components/lesson/LessonComponent';
 import FormButton from '@/components/ui/FormButton';
 import { useGemma } from '@/context/GemmaProvider';
+import { useMlKit } from '@/context/MlKitProvider';
 import { RoadmapModel } from '@/models/RoadmapModel';
 import { UserModel } from '@/models/UserModel';
 import { LearningLine, StageInterface } from '@/types/RoadmapInterface';
@@ -18,7 +19,8 @@ export default function LessonScreen() {
   const [hasError, setEasError] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading lesson...");
   const router = useRouter();
-  const { generateResponse , translateBatch} = useGemma(); 
+  const { generateResponse, isModelLoaded } = useGemma(); 
+  const { translateBatch } = useMlKit();
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -32,8 +34,10 @@ export default function LessonScreen() {
         setLoadingMessage("Failed to load user data. Please try again.");
       }
     };
-    loadUserData();
-  }, []);
+    if(isModelLoaded){
+      loadUserData();
+    }
+  }, [isModelLoaded]);
 
   const getStageLessions = async (userData: UserInterface) => {
     setLoading(true);

@@ -40,12 +40,14 @@ export default function CreateRoadmapScreen() {
     try {
       const roadmap = await RoadmapGeneratorAgent.generateAndSave(generateResponse, initialUserData!, goal, title);
       await RoadmapModel.addRoadmap(roadmap);
-      router.push('/(tabs)/learn-english');
+      router.replace('/(tabs)/learn-english');
     } catch (e: any) {
+      console.log("handleGenerateRoadmap error", e)
     } finally {
       setIsGenerating(false);
     }
   };
+
 
   return (
       <KeyboardAvoidingView

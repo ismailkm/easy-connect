@@ -2,7 +2,8 @@ import { Text, View } from '@/components/Themed';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { Colors } from '@/constants/Colors';
-import { useGemma } from '@/context/GemmaProvider';
+import { useMlKit } from '@/context/MlKitProvider';
+import { useVoice } from '@/context/VoiceProvider';
 import { MessageInterface } from '@/types/MessageInterface';
 import { isEnglish } from '@/utils/languageDeductor';
 import { FontAwesome } from '@expo/vector-icons';
@@ -17,11 +18,11 @@ export default function PracticeEnglishScreen() {
   ]);
   const [inputText, setInputText] = useState('');
   const [inputHeight, setInputHeight] = useState(35);
-  const { translateBatch, recognizeSpeech, unloadModel, isModelLoaded } = useGemma();
+  
   const [isTranslating, setIsTranslating] = useState(false);
-  
-  
-  console.log({isModelLoaded})
+  const { recognizeSpeech } = useVoice();
+  const { translateBatch } = useMlKit();
+
   const handleSendMessage = async (text: string) => {
     const textToTranslate = text.trim();
     const isEnglishText = isEnglish(textToTranslate);

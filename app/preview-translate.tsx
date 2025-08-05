@@ -4,12 +4,14 @@ import ImageModal from '@/components/Translate/ImageModal';
 import { TranslationLine } from '@/components/Translate/TranslationLine';
 import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { useGemma } from '@/context/GemmaProvider';
+import { useMlKit } from '@/context/MlKitProvider';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function PreviewTranslateScreen() {  
-  const { recognizeText, translateBatch, generateResponse  } = useGemma();
+  const { generateResponse, isModelLoaded  } = useGemma();
+  const { recognizeText, translateBatch } = useMlKit();
   const { photoUri } = useLocalSearchParams<{ photoUri: string }>();
   const [isLoadingTranslation, setIsLoadingTranslation] = useState(true);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -29,22 +31,39 @@ export default function PreviewTranslateScreen() {
         setNativeTranslation(nativeLines);
         setIsLoadingTranslation(false);
 
+      } catch (e) {
+        console.log('Error processing image:', e);
+      } finally {
+        setIsLoadingTranslation(false);
+      }
+    };
+    processImage();
+  }, [photoUri]);
+
+  useEffect(() => {
+    const processSummary = async () => {
+      console.log("useEffect processSummary")
+      console.log('isModelLoaded', isModelLoaded);
+
+      try {
         setIsLoadingSummary(true);
         const fullEnglishText = englishLines.join(' ');
         const englishSummary = await SummaryAgent.generateSummary(generateResponse, fullEnglishText);
         const translatedSummaryLines = await translateBatch([englishSummary], 'en', 'dari');
         setSummary(translatedSummaryLines.join('\n')); 
         setIsLoadingSummary(false);
-
       } catch (e) {
-        // Handle errors
+        console.log('Error processing summary:', e);
       } finally {
-        setIsLoadingTranslation(false);
         setIsLoadingSummary(false);
       }
     };
-    processImage();
-  }, [photoUri]);
+
+    if( isModelLoaded && englishLines.length > 0){
+       processSummary();
+    }
+   
+  }, [isModelLoaded, englishLines]);
 
   const [imageModalVisible, setImageModalVisible] = useState(false);
 

@@ -1,4 +1,4 @@
-import { useGemma } from '@/context/GemmaProvider';
+import { useVoice } from '@/context/VoiceProvider';
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -19,7 +19,7 @@ export const SoundPlayer: React.FC<SoundPlayerProps> = ({
   messageId
 }) => {
   const animation = useState(new Animated.Value(0))[0];
-  const { speak, stopSpeaking, speakingUtteranceId } = useGemma();
+  const { speak, stopSpeaking, speakingUtteranceId } = useVoice();
 
   const isSpeaking = speakingUtteranceId === messageId;
   
