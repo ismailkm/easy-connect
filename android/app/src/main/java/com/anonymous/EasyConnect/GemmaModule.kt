@@ -31,7 +31,16 @@ import android.net.Uri
 import android.speech.tts.UtteranceProgressListener
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
-class GemmaModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import com.facebook.react.bridge.ActivityEventListener
+import com.facebook.react.bridge.BaseActivityEventListener
+
+class GemmaModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener {
 
     override fun getName() = "GemmaModule"
 
@@ -42,6 +51,11 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
     private val translators = mutableMapOf<String, Translator>()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private var textToSpeech: TextToSpeech? = null
+
+    // --- 3. ADD NEW VARIABLES FOR SPEECH RECOGNITION ---
+    private var speechRecognizer: SpeechRecognizer? = null
+    private var speechPromise: Promise? = null
+    private val SPEECH_REQUEST_CODE = 101 // A unique code for our activity result
 
     init {
         textToSpeech = TextToSpeech(reactContext) {
@@ -70,6 +84,7 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
                 Log.e("GemmaModule", "TextToSpeech initialization failed")
             }
         }
+        reactContext.addActivityEventListener(this)    
     }
 
     private fun sendTtsEvent(eventName: String, utteranceId: String) {
@@ -117,6 +132,39 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
             isNativeModelLoaded = false // Reset on failure
             Log.e("GemmaModule", "FAILURE: An error occurred during MediaPipe model loading.", e)
             promise.reject("MODEL_LOAD_ERROR", "Failed to load model: ${e.message}")
+        }
+    }
+
+    @ReactMethod
+    fun unloadModel(promise: Promise) {
+        // Check if the model is actually loaded before trying to unload it.
+        if (!isNativeModelLoaded || llmInference == null) {
+            Log.d("GemmaModule", "Model is not currently loaded. Nothing to unload.")
+            promise.resolve("Model was not loaded.")
+            return
+        }
+
+        try {
+            Log.d("GemmaModule", "Unloading and releasing Gemma model...")
+
+            // --- 1. The Core Action: Close the LlmInference instance ---
+            // This is the most important step. It calls the native C++ destructor
+            // and frees up all the memory allocated by the model.
+            llmInference?.close()
+            
+            // --- 2. Clean up our Kotlin references ---
+            llmInference = null
+            isNativeModelLoaded = false
+
+            Log.d("GemmaModule", "Gemma model successfully unloaded and memory released.")
+            promise.resolve("Model successfully unloaded.")
+
+        } catch (e: Exception) {
+            Log.e("GemmaModule", "An error occurred while unloading the model.", e)
+            // Even on error, we should try to reset the state.
+            llmInference = null
+            isNativeModelLoaded = false
+            promise.reject("UNLOAD_ERROR", "An error occurred while unloading the model: ${e.message}", e)
         }
     }
 
@@ -278,6 +326,52 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
         }
     }
 
+    // --- 5. ADD THE NEW `recognizeSpeech` FUNCTION ---
+    @ReactMethod
+    fun recognizeSpeech(languageCode: String, promise: Promise) {
+        val currentActivity = reactContext.currentActivity
+        if (currentActivity == null) {
+            promise.reject("ACTIVITY_NULL", "Activity is null, cannot start speech recognizer.")
+            return
+        }
+
+        // Store the promise so we can use it in the onActivityResult callback
+        this.speechPromise = promise
+
+        // Create the Speech Recognizer Intent
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageCode) // e.g., "fa-IR" for Dari
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...") // This text is shown on the native UI
+        }
+
+        // Start the native Android listening UI
+        currentActivity.startActivityForResult(intent, SPEECH_REQUEST_CODE)
+    }
+
+    // --- 6. ADD THE REQUIRED CALLBACKS for ActivityEventListener ---
+    // This function is called when the native listening UI finishes and returns a result.
+    override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == SPEECH_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                // Success: Extract the transcribed text
+                val results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                val bestResult = results?.get(0) ?: ""
+                Log.d("GemmaModule_ASR", "Speech recognized: $bestResult")
+                this.speechPromise?.resolve(bestResult)
+            } else {
+                // Failure or Canceled by the user
+                Log.w("GemmaModule_ASR", "Speech recognition was canceled or failed.")
+                this.speechPromise?.reject("ASR_ERROR", "Speech recognition failed or was canceled by the user.")
+            }
+            // Clean up the promise to prevent memory leaks
+            this.speechPromise = null
+        }
+    }
+
+    // This is also required by the interface. We don't need to do anything here.
+    override fun onNewIntent(intent: Intent?) {}
+
     override fun onCatalystInstanceDestroy() {
 
         super.onCatalystInstanceDestroy()
@@ -300,6 +394,11 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
         textToSpeech?.shutdown()
         textToSpeech = null
         Log.d("GemmaModule", "TextToSpeech engine shut down.")
+
+        // Destroy the speech recognizer if it exists
+        speechRecognizer?.destroy()
+        speechRecognizer = null
+        Log.d("GemmaModule", "SpeechRecognizer instance destroyed.")
 
         // --- Cancel any running coroutines ---
         coroutineScope.cancel()

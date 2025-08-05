@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 import { useGemma } from '@/context/GemmaProvider';
 import { MessageInterface } from '@/types/MessageInterface';
 import { isEnglish } from '@/utils/languageDeductor';
+import { FontAwesome } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,11 +17,13 @@ export default function PracticeEnglishScreen() {
   ]);
   const [inputText, setInputText] = useState('');
   const [inputHeight, setInputHeight] = useState(35);
-  const { translateBatch } = useGemma();
+  const { translateBatch, recognizeSpeech, unloadModel, isModelLoaded } = useGemma();
   const [isTranslating, setIsTranslating] = useState(false);
   
-  const handleSendMessage = async () => {
-    const textToTranslate = inputText.trim();
+  
+  console.log({isModelLoaded})
+  const handleSendMessage = async (text: string) => {
+    const textToTranslate = text.trim();
     const isEnglishText = isEnglish(textToTranslate);
     let sourceLang:TranslateLanguage = 'en';
     let targetLang:TranslateLanguage = 'dari';
@@ -79,6 +82,26 @@ export default function PracticeEnglishScreen() {
     }
   };
 
+    // --- Logic for Speech-to-Text ---
+  const handleMicrophonePress = async () => {
+    setIsTranslating(true);
+    try {
+      // 1. Call the native speech recognizer
+      const transcribedDari = await recognizeSpeech('fa-IR');
+
+      if (transcribedDari) {
+        console.log({transcribedDari})
+        // 2. If we get text, send it through the same translation logic
+        await handleSendMessage(transcribedDari);
+      }
+    } catch (e: any) {
+      // This error often means the user canceled, so we can ignore it or show a subtle message
+      console.log("Speech recognition canceled or failed:", e.message);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   const renderMessage = ({ item }: { item: MessageInterface }) => (
     <View style={[styles.messageContainer, item.sender === 'user' ? styles.userMessage : styles.aiMessage]}>
       {item.sender === 'user' ? (
@@ -129,9 +152,15 @@ export default function PracticeEnglishScreen() {
               multiline
               onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
             />
-            <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-              {isTranslating ? <ActivityIndicator/> : <IconSymbol name="arrow.up.circle.fill" color={Colors.light.tint} size={24} />}
-            </TouchableOpacity>
+            {inputText.trim().length > 0 ? (
+              <TouchableOpacity onPress={() => handleSendMessage(inputText)} style={styles.sendButton} disabled={isTranslating}>
+                {isTranslating ? <ActivityIndicator/> : <IconSymbol name="arrow.up.circle.fill" color={Colors.light.tint} size={24} />}
+              </TouchableOpacity>
+              ) : (
+              <TouchableOpacity onPress={handleMicrophonePress} style={styles.sendButton} disabled={isTranslating}>
+                <FontAwesome name="microphone" size={30} color="#007AFF" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         

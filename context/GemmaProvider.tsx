@@ -15,6 +15,8 @@ interface GemmaContextType {
   stopSpeaking: () => Promise<void>;
   speakingUtteranceId: string | null;
   isSpeaking: boolean;
+  recognizeSpeech: (langCode: 'fa-IR') => Promise<string>; 
+  unloadModel: () => Promise<void>;
 }
 
 const GemmaContext = createContext<GemmaContextType | undefined>(undefined);
@@ -161,6 +163,29 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     return await GemmaModule.recognizeTextFromImage(imageUri);
   };
 
+  const recognizeSpeech = async (langCode: 'fa-IR'): Promise<string> => {
+    if (!GemmaModule?.recognizeSpeech) {
+      throw new Error('The native recognizeSpeech function is not available.');
+    }
+    try {
+      console.log(`GemmaProvider: Starting speech recognition for ${langCode}...`);
+      // The native module will show the listening UI and return the transcribed text.
+      const transcribedText = await GemmaModule.recognizeSpeech(langCode);
+      return transcribedText;
+    } catch (e: any) {
+      // Handle cases where the user cancels, there's no speech, or a network error occurs
+      console.log("Speech recognition failed or was canceled:", e.message);
+      return ""; // Return an empty string on failure/cancellation
+    }
+  };
+  
+  const unloadModel = async () => {
+    if (!GemmaModule?.unloadModel) return;
+    await GemmaModule.unloadModel();
+    // IMPORTANT: You must also update your provider's state here!
+    setIsModelLoaded(false); 
+  };
+
   const value = {
     isModelLoaded,
     isLoading,
@@ -172,6 +197,8 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
     stopSpeaking,
     isSpeaking: speakingUtteranceId !== null, // A simple boolean for the UI
     speakingUtteranceId, // The specific ID, for more complex UI
+    recognizeSpeech,
+    unloadModel
   };
 
   return <GemmaContext.Provider value={value}>{children}</GemmaContext.Provider>;
