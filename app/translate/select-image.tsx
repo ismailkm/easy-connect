@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 
@@ -26,10 +27,17 @@ export default function ImagePickerExample() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.pickImageButton} onPress={pickImage}>
-          <Ionicons name="image-outline" size={50} color="#007AFF" />
-          <Text style={styles.pickImageButtonText}>Pick an image from gallery</Text>
+      <LinearGradient
+        colors={['#45B7D8', '#3080A0']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.pickImageButton}
+      >
+        <TouchableOpacity style={styles.innerButton} onPress={pickImage}>
+            <Ionicons name="image-outline" size={50} color="white" />
+            <Text style={styles.pickImageButtonText}>Pick an image from gallery</Text>
         </TouchableOpacity>
+      </LinearGradient>
     </View>
   );
 }
@@ -47,18 +55,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   pickImageButton: {
-    backgroundColor: '#E0E0E0',
-    padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
     width: '80%',
     height: 150,
+    overflow: 'hidden',
+  },
+  innerButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
   pickImageButtonText: {
     marginTop: 10,
     fontSize: 18,
-    color: '#007AFF',
+    color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },

@@ -159,7 +159,7 @@ export default function PracticeEnglishScreen() {
               </TouchableOpacity>
               ) : (
               <TouchableOpacity onPress={handleMicrophonePress} style={styles.sendButton} disabled={isTranslating}>
-                <FontAwesome name="microphone" size={30} color="#007AFF" />
+                <FontAwesome name="microphone" size={20} color={Colors.light.tint} />
               </TouchableOpacity>
             )}
           </View>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   messageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    paddingVertical: 5,
     borderRadius: 10,
     marginBottom: 8,
     maxWidth: '80%',
@@ -196,11 +196,15 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     backgroundColor: '#ADD8E6',
     justifyContent: 'flex-end',
+    paddingRight: 20,
+    paddingLeft: 10,
   },
   aiMessage: {
     alignSelf: 'flex-start',
     backgroundColor: '#ECECEC',
     justifyContent: 'flex-start',
+    paddingRight: 20,
+    paddingLeft: 10,
   },
   messageTextUser: {
     color: '#000',

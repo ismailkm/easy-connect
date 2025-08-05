@@ -1,6 +1,8 @@
-import React from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ImageSourceModalProps {
   visible: boolean;
@@ -23,20 +25,25 @@ export const ImageSourceModal: React.FC<ImageSourceModalProps> = ({
       onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
-        <View style={styles.modalView}>
+        <LinearGradient
+          colors={[Colors.light.uploadImageButton, Colors.light.uploadImageButton + 'B3']}
+          style={styles.modalView}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name="close-circle" size={30} color="black" />
+            <Ionicons name="close-circle" size={30} color="white" />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Choose Image Source</Text>
           <TouchableOpacity style={styles.optionButton} onPress={onTakePicture}>
-            <Ionicons name="camera" size={40} color="#007AFF" />
+            <Ionicons name="camera" size={40} color="white" />
             <Text style={styles.optionText}>Take Picture</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.optionButton} onPress={onSelectFromGallery}>
-            <Ionicons name="image" size={40} color="#007AFF" />
+            <Ionicons name="image" size={40} color="white" />
             <Text style={styles.optionText}>Select from Gallery</Text>
           </TouchableOpacity>
-        </View>
+        </LinearGradient>
       </View>
     </Modal>
   );
@@ -51,7 +58,6 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
@@ -64,6 +70,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     width: '80%',
+    overflow: 'hidden',
   },
   closeButton: {
     position: 'absolute',
@@ -74,20 +81,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: 'white',
   },
   optionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
     marginVertical: 10,
-    backgroundColor: '#F0F0F0',
     borderRadius: 10,
     width: '100%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderWidth: 1,
+    borderColor: 'white',
   },
   optionText: {
     marginLeft: 10,
     fontSize: 18,
     fontWeight: '600',
+    color: 'white',
   },
 });
