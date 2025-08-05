@@ -135,16 +135,25 @@ class GemmaModule(private val reactContext: ReactApplicationContext) : ReactCont
     }
 
     @ReactMethod
-    fun translateBatch(lines: ReadableArray, targetLang: String, promise: Promise) {
-        if (targetLang != "dari") {
-            promise.reject("LANG_ERROR", "Currently, only Dari is supported.")
-            return
+    fun translateBatch(lines: ReadableArray, sourceLang: String, targetLang: String, promise: Promise) {
+        // if (targetLang != "dari" || sourceLang != "eng") {
+        //     promise.reject("LANG_ERROR", "Currently, only Dari and English are supported.")
+        //     return
+        // }
+         Log.d("GemmaModule", "ML Kit Dari model is ready.")
+        val sourceLanguageCode = when (sourceLang) {
+        "dari" -> TranslateLanguage.PERSIAN
+        else -> TranslateLanguage.ENGLISH
+        }
+        val targetLanguageCode = when (targetLang) {
+            "dari" -> TranslateLanguage.PERSIAN
+            else -> TranslateLanguage.ENGLISH
         }
 
         // --- 1. Define Translator Options ---
         val options = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.ENGLISH)
-            .setTargetLanguage(TranslateLanguage.PERSIAN)
+            .setSourceLanguage(sourceLanguageCode)
+            .setTargetLanguage(targetLanguageCode)
             .build()
         val translator = Translation.getClient(options)
 

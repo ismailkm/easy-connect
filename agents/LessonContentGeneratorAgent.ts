@@ -63,7 +63,7 @@ const parseResponseToEnglishLines = (responseText: string): string[] => {
 
 export const generateLessonContent = async (
   generateResponse: (prompt: string) => Promise<string>,     
-  translateBatch: (lines: string[], lang: 'pashto' | 'dari') => Promise<string[]>, 
+  translateBatch: (lines: string[], sourceLang: TranslateLanguage, targetLang: TranslateLanguage) => Promise<string[]>, 
   lessonTitle: string,
   lessonGoal: string,
   userProfile: UserInterface
@@ -73,7 +73,7 @@ export const generateLessonContent = async (
   const gemmaResponse = await generateResponse(instruction);
   let englishLines = parseResponseToEnglishLines(gemmaResponse);
  
-  const translatedLines = await translateBatch(englishLines, userProfile.nativeLanguage);
+  const translatedLines = await translateBatch(englishLines, 'en', userProfile.nativeLanguage);
 
   if (englishLines.length !== translatedLines.length) {
     throw new Error("Translation error.");

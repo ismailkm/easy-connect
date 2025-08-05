@@ -9,7 +9,7 @@ interface GemmaContextType {
   isLoading: boolean;
   error: string | null;
   generateResponse: (prompt: string) => Promise<string>;
-  translateBatch: (lines: string[], targetLang: 'pashto' | 'dari') => Promise<string[]>;
+  translateBatch: (lines: string[], sourceLang: TranslateLanguage, targetLang: TranslateLanguage) => Promise<string[]>;
   speak: (text: string, langCode: LanguageCode, utteranceId: string) => Promise<void>;
   recognizeText: (imageUri: string) => Promise<string[]>;
   stopSpeaking: () => Promise<void>;
@@ -113,13 +113,14 @@ export const GemmaProvider: React.FC<GemmaProviderProps> = ({ children }) => {
 
   const translateBatch = async (
     lines: string[],
-    targetLang: 'pashto' | 'dari'
+    sourceLang: TranslateLanguage,
+    targetLang: TranslateLanguage
   ): Promise<string[]> => {
     if (!GemmaModule?.translateBatch) {
       throw new Error('The native translateBatch function is not available.');
     }
     console.log(`GemmaProvider: Translating batch of ${lines.length} lines to ${targetLang}...`);
-    return await GemmaModule.translateBatch(lines, targetLang);
+    return await GemmaModule.translateBatch(lines, sourceLang, targetLang);
   };
 
   const speak = async (text: string, langCode: LanguageCode, utteranceId: string) => {

@@ -25,14 +25,14 @@ export default function PreviewTranslateScreen() {
         const recognizedEnglishLines = await recognizeText(photoUri);
  
         setEnglishLines(recognizedEnglishLines);
-        const nativeLines = await translateBatch(recognizedEnglishLines, 'dari');
+        const nativeLines = await translateBatch(recognizedEnglishLines, 'en', 'dari');
         setNativeTranslation(nativeLines);
         setIsLoadingTranslation(false);
 
         setIsLoadingSummary(true);
         const fullEnglishText = englishLines.join(' ');
         const englishSummary = await SummaryAgent.generateSummary(generateResponse, fullEnglishText);
-        const translatedSummaryLines = await translateBatch([englishSummary], 'dari');
+        const translatedSummaryLines = await translateBatch([englishSummary], 'en', 'dari');
         setSummary(translatedSummaryLines.join('\n')); 
         setIsLoadingSummary(false);
 

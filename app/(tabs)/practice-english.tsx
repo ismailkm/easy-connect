@@ -4,6 +4,7 @@ import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { Colors } from '@/constants/Colors';
 import { useGemma } from '@/context/GemmaProvider';
 import { MessageInterface } from '@/types/MessageInterface';
+import { isEnglish } from '@/utils/languageDeductor';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +21,19 @@ export default function PracticeEnglishScreen() {
   
   const handleSendMessage = async () => {
     const textToTranslate = inputText.trim();
+    const isEnglishText = isEnglish(textToTranslate);
+    let sourceLang:TranslateLanguage = 'en';
+    let targetLang:TranslateLanguage = 'dari';
+    let userLangCode: LanguageCode = 'en';
+    let aiLangCode: LanguageCode = 'fa-ir';
+
+    if (!isEnglishText) {
+        sourceLang = 'dari';
+        targetLang = 'en';
+        userLangCode = 'fa-ir';
+        aiLangCode = 'en';
+    }
+
     if (!textToTranslate || isTranslating) return;
 
     // 1. Add the user's message to the chat
@@ -27,14 +41,17 @@ export default function PracticeEnglishScreen() {
       id: String(Date.now()),
       text: textToTranslate,
       sender: 'user',
-      languageCode: 'en'
+      languageCode: userLangCode
     };
+
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setInputHeight(35);
     setIsTranslating(true);
+
     try {
-      const resultArray = await translateBatch([textToTranslate], 'dari');
+
+      const resultArray = await translateBatch([textToTranslate], sourceLang, targetLang);
       
       let translatedText = "Translation failed.";
       if (resultArray && resultArray.length > 0) {
@@ -45,7 +62,7 @@ export default function PracticeEnglishScreen() {
         id: String(Date.now() + 1),
         text: translatedText,
         sender: 'ai',
-        languageCode: 'fa-ir'
+        languageCode: aiLangCode
       };
       setMessages((prevMessages) => [...prevMessages, translatedMessage]);
 
@@ -54,7 +71,7 @@ export default function PracticeEnglishScreen() {
         id: String(Date.now() + 1),
         text: "Sorry, an error occurred during translation.",
         sender: 'ai',
-        languageCode: 'fa-ir'
+        languageCode: 'en'
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
