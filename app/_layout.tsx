@@ -1,29 +1,136 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { GemmaLoader } from '@/components/GemmaLoader';
+import { Text, View } from '@/components/Themed';
+import { Colors } from '@/constants/Colors';
+import { GemmaProvider } from '@/context/GemmaProvider';
+import { MlKitProvider } from '@/context/MlKitProvider';
+import { VoiceProvider, useVoice } from '@/context/VoiceProvider';
+import { StorageHelper } from '@/models/StorageHelper';
+import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { Stack, useNavigation, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { TouchableOpacity } from 'react-native';
+
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+  return (
+    <GemmaProvider>
+      <MlKitProvider>
+        <VoiceProvider>
+          <AppLayout />
+        </VoiceProvider>
+      </MlKitProvider>
+    </GemmaProvider>
+  );
+}
+
+
+function AppLayout() {
+  const router = useRouter();
+  const navigation = useNavigation();
+  
+  const { stopSpeaking, isSpeaking } = useVoice();
+  
+  const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', () => {
+      if (isSpeaking) {
+        console.log('Screen lost focus, stopping active speech.');
+        stopSpeaking();
+      }
+    });
+    return unsubscribe;
+  }, [navigation, isSpeaking, stopSpeaking]);
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      try {
+        const hasOnboarded = await StorageHelper.getOnboardedStatus();
+        if (hasOnboarded) {
+          router.replace('/(tabs)');
+        } else {
+          router.replace('/welcome');
+        }
+      } catch (e) {
+        router.replace('/welcome');
+      }
+    };
+    if (fontsLoaded) {
+      checkOnboardingStatus();
+    }
+  }, [fontsLoaded]); 
+
+  
+  if (fontError) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Error starting app: {fontError?.message}</Text>
+      </View>
+    );
   }
 
+  const handleLogout = async () => {
+    await StorageHelper.clearAllStorage();
+    router.replace('/welcome');
+  };
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <>
+      <GemmaLoader />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="welcome" />
+        <Stack.Screen name="roadmap" />
+        <Stack.Screen name="lesson" />
+        <Stack.Screen name="quiz" />
+        <Stack.Screen name="create-roadmap" options={{ headerShown: true, title: 'Create New Roadmap' }}/>
+        <Stack.Screen name="settings" 
+          options={({ navigation }) => ({
+              title: 'Settings',
+              headerShown: true,
+              headerRight: () => {
+                return (
+                  <TouchableOpacity onPress={handleLogout}>
+                    <Ionicons name="exit-outline" size={24} color={Colors.light.buttonColor} />
+                  </TouchableOpacity>
+                );
+              },
+          })}
+        />
+        <Stack.Screen name="translate" />
+        <Stack.Screen name="practice-english" 
+        options={({ navigation }) => ({
+            title: 'Practice English',
+            headerShown: true,
+            headerLeft: () => {
+              return (
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/translate')}>
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+              );
+            },
+        })}/>
+        <Stack.Screen name="preview-translate" 
+          options={({ navigation }) => ({
+            title: 'Preview & Translate',
+            headerShown: true,
+            headerLeft: () => {
+              return (
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/translate')}>
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+              );
+            },
+        })}/>
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    </>
+    
   );
 }
+
+

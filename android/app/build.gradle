@@ -103,6 +103,9 @@ android {
             keyPassword 'android'
         }
     }
+    aaptOptions {
+        noCompress '.task', '.tflite'
+    }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -158,6 +161,15 @@ dependencies {
     implementation 'com.google.mediapipe:tasks-vision:0.10.14'
     implementation 'com.google.mediapipe:tasks-audio:0.10.11'
     // =================================================================
+
+    //ML KIT TRANSLATE
+    implementation 'com.google.mlkit:translate:17.0.2'
+    //ML KIT TEXT RECOGNITION (OCR)
+    implementation 'com.google.mlkit:text-recognition:16.0.0'
+    // implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.0'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

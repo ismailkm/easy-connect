@@ -1,85 +1,150 @@
-// In App.tsx
-import React, { useState } from 'react';
-import {
-  ActivityIndicator,
-  Button,
-  NativeModules,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import { DashboardButton } from '@/components/DashboardButton';
+import { Text, View } from '@/components/Themed';
+import { Colors } from '@/constants/Colors';
+import { UserModel } from '@/models/UserModel';
+import UserInterface from '@/types/UserInterface';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
-// This line imports your native module into React Native
-const { GemmaModule } = NativeModules;
+const DashboardScreen = () => {
+  const [userData, setUserData] = useState<UserInterface | null>(null);
 
-const HomeScreen = () => {
-  const [status, setStatus] = useState('Model not loaded.');
-  const [isLoading, setIsLoading] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUserData = async () => {
+        try {
+          const storedUserData = await UserModel.getUserDetails();
+          if (storedUserData) {
+            setUserData(storedUserData);
+          }
+        } catch (e) {
+          console.error('Failed to load user data from UserModel', e);
+        }
+      };
 
-  // This function is called when you press the button
-  const handleLoadModel = async () => {
-    // Check if the native module exists
-    if (!GemmaModule) {
-      setStatus('Error: GemmaModule is not available. Check your native setup.');
-      return;
-    }
+      fetchUserData();
+    }, [])
+  );
 
-    setIsLoading(true);
-    setStatus('Loading model, please wait...');
-
-    try {
-      // This is the key part: it calls your Kotlin function
-      const result = await GemmaModule.loadModel();
-      console.log(result)
-      setStatus(result); // If successful, display the success message from Kotlin
-    } catch (error) {
-      console.error(error);
-      // If it fails, display the error message from Kotlin
-      setStatus(`Error: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const greetingName = userData?.firstName || 'Friend';
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>The Bridging App</Text>
-      <Text style={styles.subtitle}>Day 1: Foundation Test</Text>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={[Colors.light.tint, Colors.light.tint + 'B3']}
+        style={styles.introSection}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View style={styles.greetingContainer}>
+          <Text style={styles.greetingText}>Hello, {greetingName}!</Text>
+          <Text style={styles.subtitle}>Your personalized guide to UK life.</Text>
+          <Text style={styles.welcomeMessage}>Connect, learn, and thrive with EasyConnect.</Text>
+        </View>
+        <View style={styles.offlineIndicator}>
+          <View style={styles.offlineCircle} />
+          <Text style={styles.offlineText}>Offline Ready</Text>
+        </View>
+      </LinearGradient>
 
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Load Gemma 3n Model"
-          onPress={handleLoadModel}
-          disabled={isLoading}
-        />
+      <View
+        style={styles.buttonSection}
+      >
+          <DashboardButton
+            iconName="text.bubble.fill"
+            title="Quick Translate"
+            subtitle="From Camera or Text"
+            onPress={() => router.push('/(tabs)/translate')}
+            startColor={Colors.light.translateButton}
+            endColor={Colors.light.translateButton + 'B3'}
+          />
+          <DashboardButton
+            iconName="graduationcap.fill"
+            title="Learn English"
+            subtitle="Interactive Lessons"
+            onPress={() => router.push('/(tabs)/learn-english')}
+            startColor={Colors.light.learnEnglishButton}
+            endColor={Colors.light.learnEnglishButton + 'B3'}
+          />
+          <DashboardButton
+            iconName="questionmark.circle.fill"
+            title="Ask About UK Life"
+            subtitle="Get Help & Information"
+            onPress={() => router.push('/(tabs)/ask-about-uk-life')}
+            startColor={Colors.light.askUkLifeButton}
+            endColor={Colors.light.askUkLifeButton + 'B3'}
+          />
       </View>
-
-      <View style={styles.statusContainer}>
-        <Text style={styles.statusText}>Status:</Text>
-        {isLoading ? (
-          <ActivityIndicator />
-        ) : (
-          <Text style={styles.status}>{status}</Text>
-        )}
-      </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold' },
-  subtitle: { fontSize: 18, color: 'gray', marginBottom: 40 },
-  buttonContainer: { marginVertical: 20 },
-  statusContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  },
+  introSection: {
+    padding: 25,
+    marginBottom: 20,
+    shadowColor: Colors.light.tint,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  buttonSection: {
+    flex: 1,
+    borderRadius: 15,
+    marginTop: 20,
+    paddingHorizontal: 20
+  },
+
+  greetingContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  greetingText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: Colors.light.textWhite,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    color: Colors.light.textWhite,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  welcomeMessage: {
+    fontSize: 16,
+    color: Colors.light.textWhite,
+    textAlign: 'center',
+  },
+  offlineIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20,
-    paddingHorizontal: 20,
+    justifyContent: 'flex-end',
+    marginTop: 10,
+    backgroundColor: 'transparent',
   },
-  statusText: { fontSize: 16, fontWeight: 'bold', marginRight: 10 },
-  status: { fontSize: 16, color: 'navy', flexShrink: 1 },
+  offlineCircle: {
+    width: 10,
+    height: 10,
+    borderRadius: 10 / 2,
+    backgroundColor: Colors.light.success,
+    marginRight: 5,
+    borderWidth: 1,
+    borderColor: Colors.light.background,
+  },
+  offlineText: {
+     fontSize: 14,
+     color: Colors.light.textWhite,
+   },
 });
 
-export default HomeScreen;
+export default DashboardScreen;

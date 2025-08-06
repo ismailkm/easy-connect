@@ -17,6 +17,8 @@ import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
 import com.anonymous.EasyConnect.GemmaPackage 
+import com.anonymous.EasyConnect.MlKitPackage
+import com.anonymous.EasyConnect.VoicePackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -28,6 +30,9 @@ class MainApplication : Application(), ReactApplication {
             // Packages that cannot be autolinked yet can be added manually here, for example:
             // packages.add(MyReactNativePackage())
             packages.add(GemmaPackage())
+            packages.add(MlKitPackage())
+            packages.add(VoicePackage())
+            
             return packages
           }
 
