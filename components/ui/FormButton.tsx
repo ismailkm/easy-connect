@@ -1,32 +1,37 @@
+import { Colors } from '@/constants/Colors';
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface FormButtonProps {
   title: string;
   onPress: () => void;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean;
 }
 
-const FormButton: React.FC<FormButtonProps> = ({ title, onPress, style, textStyle }) => {
+const FormButton: React.FC<FormButtonProps> = ({ title, onPress, style, textStyle, disabled = false }) => {
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <Text style={[styles.buttonText, textStyle]}>{title}</Text>
+    <TouchableOpacity style={[styles.submitButton, style]} onPress={onPress} disabled={disabled}>
+      <Text style={[styles.submitButtonText, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  button: {
-    width: '100%',
-    height: 50,
+  submitButton: {
+    backgroundColor: Colors.light.buttonColor,
+    paddingVertical: 15,
     borderRadius: 10,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
+    shadowColor: Colors.light.buttonColor,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  buttonText: {
+  submitButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',

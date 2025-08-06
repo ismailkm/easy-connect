@@ -27,6 +27,7 @@ const MAPPING = {
   'questionmark.circle.fill': 'help-outline',
   'arrow.up.circle.fill': 'send',
   'play': 'play-arrow',
+  'plus': 'add',
 } as IconMapping;
 
 /**

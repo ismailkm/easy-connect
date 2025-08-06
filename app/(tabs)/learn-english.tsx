@@ -1,7 +1,9 @@
 import { DashboardButton } from '@/components/DashboardButton';
 import { Text, View } from '@/components/Themed';
+import { Colors } from '@/constants/Colors';
 import { RoadmapModel } from '@/models/RoadmapModel';
 import { RoadmapInterface } from '@/types/RoadmapInterface';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
@@ -23,26 +25,42 @@ export default function LearnEnglishScreen() {
 
   // --- RENDER FUNCTION FOR THE EMPTY STATE ---
   const renderEmptyState = () => (
-    <View style={styles.centerContainer}>
-      <Text style={styles.title}>Create a New Learning Plan</Text>
-      <Text style={styles.subtitle}>
-        Tell me what you want to learn, and I will create a personalized roadmap for you.
-      </Text>
-      <DashboardButton
-        title="Start Your First Lesson"
-        subtitle="Create your first plan now!"
-        iconName="play"
-        onPress={() => router.push('/create-roadmap')}
-      />
-    </View>
+    <>
+      <LinearGradient
+        colors={[Colors.light.tint, Colors.light.tint + 'B3']}
+        style={styles.introSection}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Text style={styles.title}>Create a New Learning Plan</Text>
+        <Text style={styles.subtitle}>
+          Tell me what you want to learn, and I will create a personalized roadmap for you.
+        </Text>
+      </LinearGradient>
+      <View style={styles.centerContainer}>
+        <DashboardButton
+          title="Start Your First Lesson"
+          subtitle="Create your first roadmap now!"
+          iconName="play"
+          onPress={() => router.push('/create-roadmap')}
+          startColor={Colors.light.learnEnglishButton}
+          endColor={Colors.light.learnEnglishButton + 'B3'}
+        />
+      </View>
+    </>
   );
 
   // --- RENDER FUNCTION FOR THE ROADMAPS LIST ---
   const renderRoadmapsList = () => (
     <View style={styles.container}>
-      <View style={{flex: 1}}>
-        <Text style={styles.title}>Your Learning Plans</Text>
-      </View>
+      <LinearGradient
+        colors={[Colors.light.tint, Colors.light.tint + 'B3']}
+        style={styles.introSection}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Text style={styles.title}>Your Learning Roadmaps</Text>
+      </LinearGradient>
       <View style={{flex: 8}}>
         <FlatList
           data={roadmaps}
@@ -59,15 +77,16 @@ export default function LearnEnglishScreen() {
         />
       </View>
       
-      <View style={styles.centerContainer}>
+      <View style={{paddingHorizontal: 20}}>
         <DashboardButton
           title="Create a New Roadmap"
           subtitle="Start a new learning journey"
           iconName="plus"
           onPress={() => router.push('/create-roadmap')}
+          startColor={Colors.light.learnEnglishButton}
+          endColor={Colors.light.learnEnglishButton + 'B3'}
         />
       </View>
-      
     </View>
   );
   
@@ -84,25 +103,34 @@ export default function LearnEnglishScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20
+    backgroundColor: Colors.light.background,
+  },
+  introSection: {
+    padding: 25,
+    shadowColor: Colors.light.tint,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
   },
   centerContainer: { 
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 20,
     textAlign: 'center',
+    color: Colors.light.textWhite,
   },
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 30,
-    color: '#666',
+    color: Colors.light.textWhite,
     paddingHorizontal: 20,
   },
   roadmapGoal: {
@@ -110,7 +138,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   roadmapItem: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: Colors.light.background,
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,

@@ -1,6 +1,7 @@
 import { QnaAgent } from '@/agents/QnaAgent';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 import { Text, View } from '@/components/Themed';
+import FormButton from '@/components/ui/FormButton';
 import { SoundPlayer } from '@/components/ui/SoundPlayer';
 import { Colors } from '@/constants/Colors';
 import { useGemma } from '@/context/GemmaProvider';
@@ -8,7 +9,7 @@ import { TextSegment } from '@/types/KnowledgebaseInterface';
 import { KnowledgebaseHelper } from '@/utils/KnowledgebaseHelper';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput } from 'react-native';
 
 export default function PracticeEnglishScreen() {
   const { generateResponse } = useGemma();
@@ -68,9 +69,11 @@ export default function PracticeEnglishScreen() {
           onChangeText={setQuestion}
           multiline
         />
-        <TouchableOpacity style={styles.submitButton} onPress={handleAskQuestion} disabled={isLoading}>
-          <Text style={styles.submitButtonText}>Get Information</Text>
-        </TouchableOpacity>
+        <FormButton
+          title="Get Information"
+          onPress={handleAskQuestion}
+          disabled={isLoading}
+        />
       </View>
 
       {/* --- 3. Result Section --- */}

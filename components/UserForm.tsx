@@ -1,4 +1,5 @@
 import { Text, View } from '@/components/Themed';
+import FormButton from '@/components/ui/FormButton';
 import { Colors } from '@/constants/Colors';
 import { ENGLISH_LEVELS } from '@/constants/EnglishLevels';
 import { GENDERS } from '@/constants/Genders';
@@ -6,7 +7,6 @@ import { LANGUAGES } from '@/constants/Languages';
 import UserInterface from '@/types/UserInterface';
 import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-
 interface UserFormProps {
   initialUserData?: UserInterface;
   onSave: (userData: UserInterface) => void;
@@ -120,9 +120,10 @@ const UserForm: React.FC<UserFormProps> = ({
           onChangeText={setProfession}
         />
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSave}>
-          <Text style={styles.submitButtonText}>{buttonTitle}</Text>
-        </TouchableOpacity>
+        <FormButton
+          title={buttonTitle}
+          onPress={handleSave}
+        />
       </View>
     </View>
   );
@@ -191,24 +192,7 @@ const styles = StyleSheet.create({
   },
   selectedButtonText: {
     color: '#FFFFFF',
-  },
-  submitButton: {
-    backgroundColor: Colors.light.buttonColor,
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-    shadowColor: Colors.light.buttonColor,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+  }
 });
 
 export default UserForm;

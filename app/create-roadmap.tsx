@@ -1,10 +1,12 @@
 import { RoadmapGeneratorAgent } from '@/agents/RoadmapGeneratorAgent';
-import { Text } from '@/components/Themed';
+import { Text, View } from '@/components/Themed';
 import FormButton from '@/components/ui/FormButton';
+import { Colors } from '@/constants/Colors';
 import { useGemma } from '@/context/GemmaProvider';
 import { RoadmapModel } from '@/models/RoadmapModel';
 import { UserModel } from '@/models/UserModel';
 import UserInterface from '@/types/UserInterface';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput } from 'react-native';
@@ -56,40 +58,51 @@ export default function CreateRoadmapScreen() {
         keyboardVerticalOffset={90}
       >
         <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-          <Text type="title" style={styles.title}>What do you want to learn?</Text>
-          <Text type="subtitle" style={styles.subtitle}>Describe your learning goal in detail.</Text>
+          <LinearGradient
+            colors={[Colors.light.tint, Colors.light.tint + 'B3']}
+            style={styles.introSection}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <Text type="title" style={styles.title}>Create Your Roadmap</Text>
+            <Text type="subtitle" style={styles.subtitle}>Describe your goal in detail.{`\n`}This helps us create your perfect roadmap.</Text>
+          </LinearGradient>
           
-          <Text style={styles.label}>Roadmap Title</Text>
-          <TextInput
-            style={styles.titleTextInput}
-            placeholder="e.g., 'IELTS Preparation', 'Daily English for UK Life'"
-            value={title}
-            onChangeText={setTitle}
-            maxLength={50}
-          />
-          <Text style={styles.charCounter}>{title.length} / 50</Text>
-          
-          <Text style={styles.label}>Your Goal</Text>
-          <TextInput
-            style={styles.goalTextInput}
-            placeholder="e.g., 'I want to improve my conversational English for travel'"
-            multiline
-            numberOfLines={4}
-            value={goal}
-            onChangeText={setGoal}
-            maxLength={150} 
-          />
-          <Text style={styles.charCounter}>{goal.length} / 150</Text>
-
-          {isGenerating ? (
-            <ActivityIndicator size="large" style={{ marginTop: 20 }} />
-          ) : (
-            <FormButton
-              title="Generate My Roadmap"
-              onPress={handleGenerateRoadmap}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Roadmap Title</Text>
+            <TextInput
+              style={styles.titleTextInput}
+              placeholder="e.g., 'IELTS Preparation', 'Daily English for UK Life'"
+              value={title}
+              onChangeText={setTitle}
+              maxLength={50}
             />
-          )}
+            <Text style={styles.charCounter}>{title.length} / 50</Text>
+            
+            <Text style={styles.label}>Your Goal</Text>
+            <TextInput
+              style={styles.goalTextInput}
+              placeholder="e.g., 'I want to improve my conversational English for travel'"
+              multiline
+              numberOfLines={4}
+              value={goal}
+              onChangeText={setGoal}
+              maxLength={150} 
+            />
+            <Text style={styles.charCounter}>{goal.length} / 150</Text>
 
+            {isGenerating ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Colors.light.tint} />
+              <Text style={styles.loadingText}>Generating your roadmap...</Text>
+            </View>
+            ) : (
+              <FormButton
+                title="Generate My Roadmap"
+                onPress={handleGenerateRoadmap}
+              />
+            )}
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
   );
@@ -97,21 +110,36 @@ export default function CreateRoadmapScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: Colors.light.background
   },
   scrollContentContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20
+  },
+  introSection: {
+    padding: 25,
+    marginBottom: 20,
+    shadowColor: Colors.light.tint,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
   },
   title: {
-    marginBottom: 10,
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: Colors.light.textWhite,
+    marginBottom: 20,
     textAlign: 'center',
   },
   subtitle: {
-    marginBottom: 20,
+    fontSize: 14,
+    color: Colors.light.textWhite,
+    marginBottom: 4,
     textAlign: 'center',
+  },
+  inputContainer: {
+    paddingHorizontal: 20,
   },
   titleTextInput: {
     width: '100%',
@@ -148,4 +176,13 @@ const styles = StyleSheet.create({
     marginTop: -15, 
     marginBottom: 20,
   },
+  loadingContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.light.text,
+    marginTop: 10,
+  }
 });

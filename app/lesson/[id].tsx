@@ -1,15 +1,16 @@
 import { LessonContentGeneratorAgent } from '@/agents/LessonContentGeneratorAgent';
 import { LessonComponent } from '@/components/lesson/LessonComponent';
-import FormButton from '@/components/ui/FormButton';
+import { Colors } from '@/constants/Colors';
 import { useGemma } from '@/context/GemmaProvider';
 import { useMlKit } from '@/context/MlKitProvider';
 import { RoadmapModel } from '@/models/RoadmapModel';
 import { UserModel } from '@/models/UserModel';
 import { LearningLine, StageInterface } from '@/types/RoadmapInterface';
 import UserInterface from '@/types/UserInterface';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams();
@@ -17,8 +18,7 @@ export default function LessonScreen() {
   const [learningMaterials, setLearningMaterials] = useState<LearningLine[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasError, setEasError] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Loading lesson...");
-  const router = useRouter();
+  const [loadingMessage, setLoadingMessage] = useState("Loading lessons...");
   const { generateResponse, isModelLoaded } = useGemma(); 
   const { translateBatch } = useMlKit();
 
@@ -66,17 +66,23 @@ export default function LessonScreen() {
   return (
     
     <View style={styles.container}>
-      <View>
+      <LinearGradient
+        colors={[Colors.light.tint, Colors.light.tint + 'B3']}
+        style={styles.lessonIntroSection}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
         <Text style={styles.stageTitle}>{stageContent?.title}</Text>
         <Text style={styles.stageDuration}>{stageContent?.duration}</Text>
-        <View style={styles.goalContainer}>
+        <View>
             <Text style={styles.goalTitle}>Goal</Text>
             <Text style={styles.goalText}>{stageContent?.goal}</Text>
         </View>
-      </View>
+      </LinearGradient>
       {(loading || hasError )? (
         <View style={styles.loadingContainer}>
-          <Text>{loadingMessage}</Text>
+          <ActivityIndicator size="large" color={Colors.light.tint} />
+          <Text style={styles.loadingText}>{loadingMessage}</Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -85,9 +91,6 @@ export default function LessonScreen() {
             return <LessonComponent key={index} id={index} material={material} />;
           })}
           
-          <View style={{marginTop: 20}}>
-            <FormButton title="Start Quiz" onPress={() => router.push(`/quiz/${id}`)} />
-          </View>
         </ScrollView>
       )}
     </View>
@@ -99,14 +102,27 @@ export default function LessonScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: Colors.light.background,
+  },
+  lessonIntroSection: {
+    paddingVertical: 25,
+    paddingHorizontal: 10,
+    shadowColor: Colors.light.tint,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
   },
   loadingContainer: {
     flex: 1,
-    paddingTop: 50,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.light.text,
+    fontWeight: 'bold',
+    marginTop: 10,
   },
   errorText: {
     fontSize: 18,
@@ -114,38 +130,33 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   scrollViewContent: {
+    paddingHorizontal: 10,
+    paddingTop: 20,
     paddingBottom: 80, // Space for the button at the bottom
   },
   stageTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: Colors.light.textWhite
   },
   stageDuration: {
     fontSize: 16,
-    color: '#555',
+    color: Colors.light.textWhite,
     marginBottom: 20,
-  },
-  goalContainer: {
-    backgroundColor: '#e6f7ff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-    borderLeftWidth: 5,
-    borderLeftColor: '#1890ff',
   },
   goalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#1890ff',
+    color: Colors.light.textWhite,
   },
   goalText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 14,
+    color: Colors.light.textWhite,
   },
   vocabularyContainer: {
-    backgroundColor: '#fff0f6',
+    backgroundColor: Colors.light.background,
     padding: 15,
     borderRadius: 8,
     marginBottom: 15,
