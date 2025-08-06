@@ -29,7 +29,7 @@ export default function TranslateScreen() {
         iconName="text.bubble.fill"
             title="Translate Text"
             subtitle="Type or paste text to translate"
-            onPress={() => router.push('/(tabs)/practice-english')}
+            onPress={() => router.replace('/practice-english')}
             startColor={Colors.light.translateButton}
         endColor={Colors.light.translateButton + 'B3'}
       />

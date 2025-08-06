@@ -132,7 +132,7 @@ export default function PracticeEnglishScreen() {
       <KeyboardAvoidingView 
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={90}
+        keyboardVerticalOffset={30}
       >
         <View style={styles.innerContainer}>
           <FlatList
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 15,
     paddingVertical: 5,
-    marginBottom: 10,
+    marginBottom: 60,
   },
   input: {
     flex: 1,

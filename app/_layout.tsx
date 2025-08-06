@@ -102,6 +102,18 @@ function AppLayout() {
           })}
         />
         <Stack.Screen name="translate" />
+        <Stack.Screen name="practice-english" 
+        options={({ navigation }) => ({
+            title: 'Practice English',
+            headerShown: true,
+            headerLeft: () => {
+              return (
+                <TouchableOpacity onPress={() => router.replace('/(tabs)/translate')}>
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+              );
+            },
+        })}/>
         <Stack.Screen name="preview-translate" 
           options={({ navigation }) => ({
             title: 'Preview & Translate',
