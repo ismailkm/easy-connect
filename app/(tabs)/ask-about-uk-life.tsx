@@ -8,7 +8,8 @@ import { useGemma } from '@/context/GemmaProvider';
 import { TextSegment } from '@/types/KnowledgebaseInterface';
 import { KnowledgebaseHelper } from '@/utils/KnowledgebaseHelper';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TextInput } from 'react-native';
 
 export default function PracticeEnglishScreen() {
@@ -20,11 +21,16 @@ export default function PracticeEnglishScreen() {
   const [answerSegments, setAnswerSegments] = useState<TextSegment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setQuestion('');
-    setAnswer('');
-    setAnswerSegments([]);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const clearInitialState = async () => {
+        setQuestion('');
+        setAnswer('');
+        setAnswerSegments([]);
+      };
+      clearInitialState();
+    }, [])
+  );
 
   const handleAskQuestion = async() => {
     if(!question) {
