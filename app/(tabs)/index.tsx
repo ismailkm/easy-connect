@@ -32,7 +32,6 @@ const DashboardScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Section 1: Introduction */}
       <LinearGradient
         colors={[Colors.light.tint, Colors.light.tint + 'B3']}
         style={styles.introSection}
@@ -50,8 +49,6 @@ const DashboardScreen = () => {
         </View>
       </LinearGradient>
 
-
-      {/* Section 2: Buttons */}
       <View
         style={styles.buttonSection}
       >
@@ -88,10 +85,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
-    padding: 20,
   },
   introSection: {
-    borderRadius: 15,
     padding: 25,
     marginBottom: 20,
     shadowColor: Colors.light.tint,
@@ -103,7 +98,8 @@ const styles = StyleSheet.create({
   buttonSection: {
     flex: 1,
     borderRadius: 15,
-    marginTop: 20
+    marginTop: 20,
+    paddingHorizontal: 20
   },
 
   greetingContainer: {
@@ -118,20 +114,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-
   subtitle: {
     fontSize: 18,
     color: Colors.light.textWhite,
     marginBottom: 4,
     textAlign: 'center',
   },
-
   welcomeMessage: {
     fontSize: 16,
     color: Colors.light.textWhite,
     textAlign: 'center',
   },
-
   offlineIndicator: {
     flexDirection: 'row',
     alignItems: 'center',

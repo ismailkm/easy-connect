@@ -97,7 +97,8 @@ export default function PreviewTranslateScreen() {
                 colors={[Colors.light.tint + 'B3', Colors.light.tint]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={styles.summarysection}
+                style={styles.summarysection
+                }
               >
             <Text style={styles.summarySectionTitle}>Summary</Text>
             {isLoadingSummary ? (
@@ -154,9 +155,7 @@ export default function PreviewTranslateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
@@ -181,14 +180,12 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
-    paddingTop: 20,
     paddingBottom: 120,
   },
   summarysection: {
     minHeight: 150,
-    paddingVertical: 15,
     paddingHorizontal: 15,
-    borderRadius: 10,
+    paddingVertical: 10,
     gap: 12,
     elevation: 2,
     shadowColor: '#000',
@@ -205,7 +202,8 @@ const styles = StyleSheet.create({
   },
   translationSection: {
     flex: 1,
-    marginTop: 20
+    marginTop: 20,
+    padding: 20
   },
   translationSectionTitle: {
     fontSize: 18,

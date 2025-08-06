@@ -5,6 +5,7 @@ import { Platform, TouchableOpacity } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
+import { Colors } from '@/constants/Colors';
 
 export default function TabLayout() {
   
@@ -16,11 +17,12 @@ export default function TabLayout() {
         headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
         headerRight: () => (
           <TouchableOpacity onPress={() => router.push('/settings')}>
-            <IconSymbol size={28} name="gearshape.fill" color="#007AFF" style={{ marginRight: 15 }} />
+            <IconSymbol size={28} name="gearshape.fill" color={Colors.light.tint} style={{ marginRight: 15 }} />
           </TouchableOpacity>
         ),
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
+        tabBarActiveTintColor: Colors.light.tabIconSelected,
         tabBarStyle: Platform.select({
           ios: {
             position: 'absolute',

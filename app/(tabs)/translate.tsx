@@ -62,11 +62,9 @@ export default function TranslateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 20,
+    backgroundColor: Colors.light.background,
   },
   introSection: {
-    borderRadius: 15,
     padding: 25,
     marginBottom: 20,
     shadowColor: Colors.light.tint,
@@ -96,5 +94,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
     marginTop: 20,
+    paddingHorizontal: 20,
   },
 });
