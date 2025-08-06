@@ -54,7 +54,7 @@ const DashboardScreen = () => {
       >
           <DashboardButton
             iconName="text.bubble.fill"
-            title="Translate"
+            title="Quick Translate"
             subtitle="From Camera or Text"
             onPress={() => router.push('/(tabs)/translate')}
             startColor={Colors.light.translateButton}
