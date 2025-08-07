@@ -98,6 +98,29 @@ class MlKitModule(private val reactContext: ReactApplicationContext) : ReactCont
             }
     }
 
+    @ReactMethod
+    fun prepareDariTranslator(promise: Promise) {
+        Log.d("MlKitModule", "Proactively preparing Dari translator...")
+
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(TranslateLanguage.PERSIAN)
+            .build()
+        val translator = Translation.getClient(options)
+
+        val conditions = DownloadConditions.Builder().build()
+
+        translator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                Log.d("MlKitModule", "Dari translation model is ready.")
+                promise.resolve("Dari model is ready.")
+            }
+            .addOnFailureListener { e ->
+                Log.e("MlKitModule", "Dari model download failed.", e)
+                promise.reject("MODEL_DOWNLOAD_ERROR", "Could not prepare Dari model: ${e.message}", e)
+            }
+    }
+
     override fun onCatalystInstanceDestroy() {
         super.onCatalystInstanceDestroy()
         translators.values.forEach { it.close() }

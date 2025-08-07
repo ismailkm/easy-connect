@@ -2,14 +2,14 @@ import { GemmaLoader } from '@/components/GemmaLoader';
 import { Text, View } from '@/components/Themed';
 import { Colors } from '@/constants/Colors';
 import { GemmaProvider } from '@/context/GemmaProvider';
-import { MlKitProvider } from '@/context/MlKitProvider';
+import { MlKitProvider, useMlKit } from '@/context/MlKitProvider';
 import { VoiceProvider, useVoice } from '@/context/VoiceProvider';
 import { StorageHelper } from '@/models/StorageHelper';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigation, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import 'react-native-reanimated';
 
@@ -31,6 +31,7 @@ function AppLayout() {
   const navigation = useNavigation();
   
   const { stopSpeaking, isSpeaking } = useVoice();
+  const { isMlKitReady } = useMlKit();
   
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -59,11 +60,21 @@ function AppLayout() {
         router.replace('/welcome');
       }
     };
-    if (fontsLoaded) {
+    if (fontsLoaded && isMlKitReady) {
       checkOnboardingStatus();
     }
-  }, [fontsLoaded]); 
+  }, [fontsLoaded, isMlKitReady]); 
 
+  const isAppLoading = !fontsLoaded || !isMlKitReady;
+
+  if (isAppLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 10 }}>Preparing Easy Connect for first use...</Text>
+      </View>
+    );
+  }
   
   if (fontError) {
     return (
@@ -72,7 +83,7 @@ function AppLayout() {
       </View>
     );
   }
-
+  
   const handleLogout = async () => {
     await StorageHelper.clearAllStorage();
     router.replace('/welcome');
